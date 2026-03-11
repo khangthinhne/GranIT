@@ -1,0 +1,2 @@
+Epoch,Train_Loss,Train_Acc,Val_Loss,Val_Acc,Val_AUC
+1,0.6033,65.00,0.6568,65.54,0.6340

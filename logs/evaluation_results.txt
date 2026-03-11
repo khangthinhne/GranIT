@@ -1,0 +1,32 @@
+
+--- ./data/faces_tight_split/test ---
+Model: baseline | Path: ./models/tight_test.pth
+ACC: 0.9038 | AUC: 0.9801 | FNR: 0.1092
+
+--- ./data/faces_wide_split/test ---
+Model: baseline | Path: ./models/tight_test.pth
+ACC: 0.5071 | AUC: 0.8665 | FNR: 0.5832
+
+--- ./data/faces_tight_split/test ---
+Model: baseline | Path: ./models/wide_test.pth
+ACC: 0.9159 | AUC: 0.9413 | FNR: 0.0301
+
+--- ./data/faces_wide_split/test ---
+Model: baseline | Path: ./models/wide_test.pth
+ACC: 0.9508 | AUC: 0.9814 | FNR: 0.0342
+
+--- D:/Project/model_testing/data/test/frames/DFDC ---
+Model: baseline | Path: ./models/tight_test.pth
+ACC: 0.7897 | AUC: 0.7195 | FNR: 0.0595
+
+--- D:/Project/model_testing/data/test/frames/DFDC ---
+Model: baseline | Path: ./models/wide_test.pth
+ACC: 0.6313 | AUC: 0.7296 | FNR: 0.3850
+
+--- D:/Project/model_testing/data/test/frames/CelebDF ---
+Model: baseline | Path: ./models/tight_test.pth
+ACC: 0.5844 | AUC: 0.6829 | FNR: 0.1883
+
+--- D:/Project/model_testing/data/test/frames/CelebDF ---
+Model: baseline | Path: ./models/wide_test.pth
+ACC: 0.5537 | AUC: 0.7078 | FNR: 0.0514
