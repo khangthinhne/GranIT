@@ -117,6 +117,10 @@ class CrossScaleInterrogation(nn.Module):
         final_feature = self.fusion_mlp(combined_features) # [Batch, 768]
         
         return final_feature
+    
+
+
+        x
 class GranIT(nn.Module):
     def __init__(self, num_classes=2, embed_dim=768):
         super().__init__()
