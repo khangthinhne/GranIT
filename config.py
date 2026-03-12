@@ -4,6 +4,7 @@ Config Variables using for initializing, training, evaluating the model.
 import torch
 
 # System & Path
+BACKBONE_NAME = "vit_base_patch16_clip_224.laion2b"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DATA_DIR = "./datasets/FaceForensics++"
 SAVE_MODEL_DIR = "./checkpoints/"
