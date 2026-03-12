@@ -47,13 +47,12 @@ class FaceForensicsDataset(Dataset):
 
 def get_dataloaders(data_dir, batch_size=32, val_split=0.2, mode='afc'):
     """
-    Hàm chuẩn bị DataLoader với Video-level split và Weighted Sampling.
+    DataLoader vs Video-level split và Weighted Sampling.
     """
-    print("Đang quét dữ liệu...")
     all_images = glob.glob(os.path.join(data_dir, "**", "*.jpg"), recursive=True)
     
     if len(all_images) == 0:
-        raise ValueError(f"Không tìm thấy ảnh nào trong {data_dir}. Hãy check lại đường dẫn!")
+        raise ValueError(f"No images in {data_dir}")
 
     # ---------------------------------------------------------
     # BƯỚC 1: VIDEO-LEVEL SPLIT (Cực kỳ quan trọng)
@@ -90,7 +89,7 @@ def get_dataloaders(data_dir, batch_size=32, val_split=0.2, mode='afc'):
     for vid in val_vids:
         val_paths.extend(video_dict[vid])
 
-    print(f"Tổng số ảnh Train: {len(train_paths)} | Val: {len(val_paths)}")
+    print(f"Total Train Images: {len(train_paths)} | Val: {len(val_paths)}")
 
     # ---------------------------------------------------------
     # BƯỚC 2: ĐỊNH NGHĨA DATA AUGMENTATION
@@ -128,6 +127,8 @@ def get_dataloaders(data_dir, batch_size=32, val_split=0.2, mode='afc'):
         train_transforms = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(degrees=5),
+            transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.05),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
@@ -145,7 +146,7 @@ def get_dataloaders(data_dir, batch_size=32, val_split=0.2, mode='afc'):
     # ---------------------------------------------------------
     train_labels = [0 if "original" in path else 1 for path in train_paths]
     class_counts = [train_labels.count(0), train_labels.count(1)]
-    print(f"Tỷ lệ Train - Real (0): {class_counts[0]}, Fake (1): {class_counts[1]}")
+    print(f"Ratio of Train - Real (0): {class_counts[0]}, Fake (1): {class_counts[1]}")
 
     # Trọng số của mỗi class = Tổng số mẫu / Số mẫu của class đó
     class_weights = [1.0 / class_counts[0], 1.0 / class_counts[1]]

@@ -6,14 +6,14 @@ import torch
 # System & Path
 BACKBONE_NAME = "vit_base_patch16_clip_224.laion2b"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-DATA_DIR = "./datasets/FaceForensics++"
-SAVE_MODEL_DIR = "./checkpoints/"
+DATA_DIR = "data/faces_processed"
+SAVE_MODEL_DIR = "./checkpoints"
 LOG_DIR = "./logs/"
 
 # Training Hyperparameters
 MODEL_NAME = "GranIT"
-BATCH_SIZE = 16
-NUM_EPOCHS = 50
+BATCH_SIZE = 8
+EPOCHS = 25
 LEARNING_RATE = 1e-4
 WEIGHT_DECAY = 0.05
 
@@ -32,3 +32,12 @@ SCALE_MAX = 0.9
 # Loss 
 LAMBDA_SCALE = 0.1
 LAMBDA_TRANS = 0.1
+
+
+
+# BATCH_SIZE = 16     
+# EPOCHS = 25
+# LEARNING_RATE = 2e-5
+
+# LAMBDA_TRANS = 0.1    
+# LAMBDA_SCALE = 0.1   
