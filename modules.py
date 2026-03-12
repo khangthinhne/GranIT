@@ -30,7 +30,7 @@ class LocalizationNetwork(nn.Module):
         return theta_params # [s_x, s_y, t_x, t_y]
 
 class AFC(nn.Module):
-    def __init__(self, ):
+    def __init__(self, crop_size=(224,224)):
         super().__init__()
         self.localization_networks = LocalizationNetwork()
 
@@ -50,8 +50,43 @@ class AFC(nn.Module):
         theta[:, 0, 2] = tx
         theta[:, 1, 2] = ty
 
-        grid = F.affine_grid(theta=theta, size=x_wide.size(), align_corners=False)
+        grid = F.affine_grid(theta=theta, size=self.crop_size, align_corners=False)
 
         x_crop = F.grid_sample(grid=grid, input=x_wide, mode='bilinear', padding_mode='border', align_corners=False)
         return x_crop, theta
+
+class CascadedCrossScaleInterrogation(nn.Module):
+    def __init__(self, embed_dim=768, num_heads=8):
+        super().__init__()
         
+        # STAGE 1: LOCAL INTERROGATES MICRO 
+        # LayerNorm
+        self.norm1_q = nn.LayerNorm(embed_dim)
+        self.norm1_kv = nn.LayerNorm(embed_dim)
+        self.cross_attn_1 = nn.MultiheadAttention(embed_dim=embed_dim, 
+                                                  num_heads=num_heads, 
+                                                  batch_first=True)
+        
+        # STAGE 2: GLOBAL INTERROGATES ENHANCED LOCAL
+        self.norm2_q = nn.LayerNorm(embed_dim)
+        self.norm2_kv = nn.LayerNorm(embed_dim)
+        self.cross_attn_2 = nn.MultiheadAttention(embed_dim=embed_dim, 
+                                                  num_heads=num_heads, 
+                                                  batch_first=True)
+
+    def forward(self, global_cls, local_patches, micro_patches):
+        # Stage 1: Local <- cross Micro
+        q1 = self.norm1_q(local_patches)
+        k1v = self.norm1_kv(micro_patches)          # share norm cho k & v
+        attn_out_1, _ = self.cross_attn_1(q1, k1v, k1v)   # để tự học Wv riêng
+
+        enhanced_local = local_patches + attn_out_1
+
+        # Stage 2: Global <- cross Enhanced Local
+        q2 = self.norm2_q(global_cls)
+        k2v = self.norm2_kv(enhanced_local)
+        attn_out_2, attn_weights_2 = self.cross_attn_2(q2, k2v, k2v)
+
+        z_final = global_cls + attn_out_2
+
+        return z_final, attn_weights_2
