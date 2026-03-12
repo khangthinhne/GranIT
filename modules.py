@@ -33,9 +33,12 @@ class AFC(nn.Module):
     def __init__(self, crop_size=(224,224)):
         super().__init__()
         self.localization_networks = LocalizationNetwork()
+        self.crop_size = crop_size
 
     def forward(self, x_wide):
         B = x_wide.size(0) # x_wide: [B, C, H, W]
+        C = x_wide.size(1)
+        grid_size = torch.Size((B, C, self.crop_size[0], self.crop_size[1]))
         theta_params = self.localization_networks(x_wide)
 
         sx = theta_params[:, 0]
@@ -50,7 +53,7 @@ class AFC(nn.Module):
         theta[:, 0, 2] = tx
         theta[:, 1, 2] = ty
 
-        grid = F.affine_grid(theta=theta, size=self.crop_size, align_corners=False)
+        grid = F.affine_grid(theta=theta, size=grid_size, align_corners=False)
 
         x_crop = F.grid_sample(grid=grid, input=x_wide, mode='bilinear', padding_mode='border', align_corners=False)
         return x_crop, theta

@@ -7,15 +7,18 @@ import csv
 import os
 from sklearn.metrics import roc_auc_score
 from torch.optim.lr_scheduler import LambdaLR, CosineAnnealingLR, SequentialLR
+import torch.backends.cudnn as cudnn
 
 from dataset import get_dataloaders
 from model import GranIT 
-BATCH_SIZE = 16     
-EPOCHS = 25
-LEARNING_RATE = 2e-5
-
-LAMBDA_TRANS = 0.1    
-LAMBDA_SCALE = 0.1    
+import config
+import argparse
+ 
+def get_args():
+    parser = argparse.ArgumentParser(description='GranIT - Granularity-Adaptive Interrogation Transformer')
+    parser.add_argument('--data_dir', type=str, default=config.DATA_DIR)
+    parser.add_argument('--save_name', type=str, default=config.MODEL_NAME)
+    return parser.parse_args()
 
 def loss_function(logits, labels, theta, criterion_ce):
     loss_ce = criterion_ce(logits, labels)
@@ -26,22 +29,24 @@ def loss_function(logits, labels, theta, criterion_ce):
     t_y = theta[:, 1, 2]
     
     # loss trans
-    loss_trans = (t_x**2 + t_y**2).mean()
+    loss_trans = (t_x**2 + t_y**2).mean() # cho ngay xung quanh tâm thoi
     
-    # loss scale (0.4, 1)
-    loss_scale = (torch.relu(0.4 - s_x) + torch.relu(s_x - 1) +
-                  torch.relu(0.4 - s_y) + torch.relu(s_y - 1)).mean()
+    # loss scale (0.4, 0.9)
+    loss_scale = (torch.relu(config.SCALE_MIN - s_x) + torch.relu(s_x - config.SCALE_MAX) +
+                  torch.relu(config.SCALE_MIN - s_y) + torch.relu(s_y - config.SCALE_MAX)).mean()
     
-    total_loss = loss_ce + LAMBDA_TRANS * loss_trans + LAMBDA_SCALE * loss_scale
+    total_loss = loss_ce + config.LAMBDA_TRANS * loss_trans + config.LAMBDA_SCALE * loss_scale
     
     return total_loss, loss_ce, loss_trans, loss_scale
 
 def train_model():
+    torch.backends.cuda.matmul.allow_tf32 = True
+    cudnn.benchmark = True
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    args = get_args()
     # Data preparation
-    data_dir = "./data/faces_processed" 
-    train_loader, val_loader = get_dataloaders(data_dir, batch_size=BATCH_SIZE)
+    data_dir = args.data_dir 
+    train_loader, val_loader = get_dataloaders(data_dir, batch_size=config.BATCH_SIZE)
 
     # Model init
     model = GranIT()
@@ -49,13 +54,13 @@ def train_model():
 
     # Optimizer & Loss
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), 
-                            lr=LEARNING_RATE, weight_decay=1e-4)
-    criterion_ce = nn.CrossEntropyLoss()
+                            lr=config.LEARNING_RATE, weight_decay=1e-4)
+    criterion_ce = nn.CrossEntropyLoss() 
     scaler = torch.cuda.amp.GradScaler()
     
     # Warm up
     warmup_epochs = 2 
-    total_epochs = EPOCHS
+    total_epochs = config.EPOCHS
     if total_epochs <= warmup_epochs: warmup_epochs = 0
 
     def warmup_lambda(current_epoch: int):
@@ -72,19 +77,19 @@ def train_model():
         scheduler = warmup_scheduler
 
     # file log
-    log_file = "training_log_GranIT_vit.csv"
+    log_file = f"training_log_{config.MODEL_NAME}.csv"
     with open(log_file, mode='w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['Epoch', 'Train_Loss', 'Train_Acc', 'Val_Loss', 'Val_Acc', 'Val_AUC'])
 
     best_auc = 0.0 
 
-    for epoch in range(EPOCHS):
+    for epoch in range(config.EPOCHS):
         # Training
         model.train()
         running_loss, correct, total = 0.0, 0, 0
 
-        pbar = tqdm(train_loader, desc=f"TRAIN Epoch {epoch+1}/{EPOCHS}")
+        pbar = tqdm(train_loader, desc=f"TRAIN Epoch {epoch+1}/{config.EPOCHS}")
         for images, labels in pbar:
             images, labels = images.to(device), labels.to(device)
 
@@ -92,7 +97,7 @@ def train_model():
             
             # Ép kiểu Float16 
             with torch.cuda.amp.autocast():
-                logits, theta = model(images)
+                logits, theta, att_weight = model(images)
                 loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
             
             # Backprop qua GradScaler
@@ -119,7 +124,7 @@ def train_model():
         val_loss, val_correct, val_total = 0.0, 0, 0
         y_true, y_scores = [], []
 
-        print("Đang đánh giá trên tập Validation...")
+        print("Validation...")
         with torch.no_grad(): 
             for images, labels in val_loader:
                 images, labels = images.to(device), labels.to(device)
@@ -147,18 +152,19 @@ def train_model():
             epoch_val_auc = 0.0 
 
         print(f"End EPOCH {epoch+1}:")
-        print(f"  -> TRAIN: Acc {epoch_train_acc:.2f}% | Loss {epoch_train_loss:.4f}")
-        print(f"  -> VAL  : Acc {epoch_val_acc:.2f}% | Loss {epoch_val_loss:.4f} | AUC: {epoch_val_auc:.4f}")
+        print(f"TRAIN: Acc {epoch_train_acc:.2f}% | Loss {epoch_train_loss:.4f}")
+        print(f"VAL  : Acc {epoch_val_acc:.2f}% | Loss {epoch_val_loss:.4f} | AUC: {epoch_val_auc:.4f}")
 
         with open(log_file, mode='a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([epoch+1, f"{epoch_train_loss:.4f}", f"{epoch_train_acc:.2f}", 
-                             f"{epoch_val_loss:.4f}", f"{epoch_val_acc:.2f}", f"{epoch_val_auc:.4f}"])
+                              f"{epoch_val_loss:.4f}", f"{epoch_val_acc:.2f}", f"{epoch_val_auc:.4f}"])
 
         if epoch_val_auc > best_auc:
             best_auc = epoch_val_auc
-            best_model_name = "GranIT_vit_lora_BEST.pth"
-            torch.save(model.state_dict(), best_model_name)
+            best_model_name = f"{config.MODEL_NAME}_BEST.pth"
+            save_path = os.path.join(config.SAVE_MODEL_DIR, best_model_name)
+            torch.save(model.state_dict(), save_path)
             print(f"Save new model with best AUC: {best_auc:.4f} -> {best_model_name}")
             
         print("-" * 50)
