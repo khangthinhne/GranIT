@@ -9,8 +9,9 @@ from sklearn.metrics import roc_auc_score
 from torch.optim.lr_scheduler import LambdaLR, CosineAnnealingLR, SequentialLR
 import torch.backends.cudnn as cudnn
 
-from dataset import get_dataloaders
+from data_preparation.dataset import get_dataloaders
 from model import GranIT 
+from modules import DualEarlyStopping
 import config
 import argparse
  
@@ -43,10 +44,15 @@ def train_model():
     torch.backends.cuda.matmul.allow_tf32 = True
     cudnn.benchmark = True
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Device: ", device)
     args = get_args()
     # Data preparation
     data_dir = args.data_dir 
-    train_loader, val_loader = get_dataloaders(data_dir, batch_size=config.BATCH_SIZE)
+    train_loader, val_loader = get_dataloaders(
+        mode='training', 
+        batch_size=config.BATCH_SIZE, 
+        dataset_model='faceforensic++'
+    )
 
     # Model init
     model = GranIT()
@@ -57,7 +63,12 @@ def train_model():
                             lr=config.LEARNING_RATE, weight_decay=1e-4)
     criterion_ce = nn.CrossEntropyLoss() 
     scaler = torch.cuda.amp.GradScaler()
-    
+    early_stopping = DualEarlyStopping(
+        patience=5, 
+        delta=0.0001, 
+        save_dir=config.SAVE_MODEL_DIR, 
+        model_name=config.MODEL_NAME
+    )
     # Warm up
     warmup_epochs = 2 
     total_epochs = config.EPOCHS
@@ -65,7 +76,7 @@ def train_model():
 
     def warmup_lambda(current_epoch: int):
         if current_epoch < warmup_epochs: 
-            return float(current_epoch + 1) / warmup_epochs
+            return float(current_epoch + 1) /   warmup_epochs
         return 1.0
 
     warmup_scheduler = LambdaLR(optimizer, lr_lambda=warmup_lambda)
@@ -77,7 +88,7 @@ def train_model():
         scheduler = warmup_scheduler
 
     # file log
-    log_file = f"training_log_{config.MODEL_NAME}.csv"
+    log_file = os.path.join(config.LOG_DIR,f"training_log_{config.MODEL_NAME}.csv")
     with open(log_file, mode='w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['Epoch', 'Train_Loss', 'Train_Acc', 'Val_Loss', 'Val_Acc', 'Val_AUC'])
@@ -130,9 +141,9 @@ def train_model():
                 images, labels = images.to(device), labels.to(device)
                 
                 with torch.cuda.amp.autocast():
-                    logits, theta = model(images)
+                    logits, theta, att_weight = model(images)
                     loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
-                
+                    
                 val_loss += loss.item()
                 probs = torch.softmax(logits, dim=1)[:, 1] # Probability
                 _, predicted = torch.max(logits, 1)
@@ -160,12 +171,12 @@ def train_model():
             writer.writerow([epoch+1, f"{epoch_train_loss:.4f}", f"{epoch_train_acc:.2f}", 
                               f"{epoch_val_loss:.4f}", f"{epoch_val_acc:.2f}", f"{epoch_val_auc:.4f}"])
 
-        if epoch_val_auc > best_auc:
-            best_auc = epoch_val_auc
-            best_model_name = f"{config.MODEL_NAME}_BEST.pth"
-            save_path = os.path.join(config.SAVE_MODEL_DIR, best_model_name)
-            torch.save(model.state_dict(), save_path)
-            print(f"Save new model with best AUC: {best_auc:.4f} -> {best_model_name}")
+        early_stopping(epoch_val_loss, epoch_val_auc, model)
+
+        if early_stopping.early_stop:
+            print(f"ACTIVATED EARLY STOPPING ở Epoch {epoch+1}!")
+            print(f"Reason: Validation loss does not decrease in {early_stopping.patience} epoch liên tiếp.")
+            break
             
         print("-" * 50)
 

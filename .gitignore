@@ -5,6 +5,7 @@ AFC/
 models/
 visualizations/
 visualizations_celebdf/
+checkpoints/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

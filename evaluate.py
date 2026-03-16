@@ -8,7 +8,7 @@ import os
 from tqdm import tqdm
 
 # Import từ các file của ông
-from dataset import get_dataloaders
+from AFC.dataset import get_dataloaders
 from model import GranIT
 
 def evaluate_and_visualize(model_path="models/GranIT_vit_lora_1.pth", data_dir="./data/faces_processed", vis_dir="./visualizations"):
