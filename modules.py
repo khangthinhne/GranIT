@@ -1,32 +1,46 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import numpy as np
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import timm
+
 class LocalizationNetwork(nn.Module):
     def __init__(self, backbone_name='vit_base_patch16_clip_224.laion2b',pretrained=True, crop_size=(224,224)):
         super().__init__()
-        self.backbone = timm.create_model(model_name=backbone_name, pretrained=pretrained, num_classes=0)
+        from model import BaselineViT
+        self.backbone = BaselineViT(model_name=backbone_name, pretrained=pretrained, num_classes=0)
         if hasattr(self.backbone, 'embed_dim'):
             self.embed_dim = self.backbone.embed_dim
         else:
             print(f"Model {backbone_name} does not have a direct 'embed_dim' attribute.")
         print(f"[{self.__class__.__name__}] Initialize ViT ({backbone_name} with embedding dim of {self.embed_dim})")
-        self.mlp = nn.Sequential(
+        self.stn_head = nn.Sequential(
             nn.Linear(self.embed_dim, 64),
             nn.ReLU(True),
             nn.Linear(64, 4) #  sx, sy, tx, ty
         )
 
-        self.mlp[2].weight.data.zero_()
-        self.mlp[2].bias.data.copy_(torch.Tensor([1,1,0,0]))
+        self.stn_head[2].weight.data.zero_()
+        self.stn_head[2].bias.data.copy_(torch.Tensor([1,1,0,0]))
+        self._freeze_base_weights()
 
+    def _freeze_base_weights(self):
+
+        for name, param in self.named_parameters():
+            if 'lora' in name or 'stn_head' in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
+                
+        trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
+        print(f"[{self.__class__.__name__}] Trainable parameters (LoRA + MLP): {trainable_params:,}")
     def forward(self, x):
-        features = self.backbone(x) # x: [B, 3, 224, 224] -> features: [B, 197, 768]?
-        theta_params = self.mlp(features)
+        features = self.backbone(x) # x: [B, 3, 224, 224] -> features: [B, 768]?
+        theta_params = self.stn_head(features)
         return theta_params # [s_x, s_y, t_x, t_y]
 
 class AFC(nn.Module):
@@ -93,3 +107,41 @@ class CascadedCrossScaleInterrogation(nn.Module):
         z_final = global_cls + attn_out_2
 
         return z_final, attn_weights_2
+
+
+
+
+class DualEarlyStopping:
+    def __init__(self, patience=7, delta=0.0, save_dir='./checkpoints', model_name='GranIT'):
+        self.patience = patience
+        self.delta = delta
+        self.save_dir = save_dir
+        self.model_name = model_name
+        
+        os.makedirs(self.save_dir, exist_ok=True)
+        
+        self.counter = 0
+        self.best_val_loss = np.Inf    
+        self.best_val_auc = -np.Inf    
+        self.early_stop = False
+
+    def __call__(self, val_loss, val_auc, model):
+        if val_auc > self.best_val_auc:
+            print(f"Val AUC new record ({self.best_val_auc:.4f} --> {val_auc:.4f}). Save model BEST_AUC...")
+            self.best_val_auc = val_auc
+            save_path_auc = os.path.join(self.save_dir, f"{self.model_name}_BEST_AUC.pth")
+            torch.save(model.state_dict(), save_path_auc)
+
+        if val_loss < self.best_val_loss - self.delta:
+            print(f"Val Loss reduce perfectly ({self.best_val_loss:.4f} --> {val_loss:.4f}). SAve model BEST_VAL_LOSS...")
+            self.best_val_loss = val_loss
+            save_path_loss = os.path.join(self.save_dir, f"{self.model_name}_BEST_VAL_LOSS.pth")
+            torch.save(model.state_dict(), save_path_loss)
+            
+            self.counter = 0 
+        else:
+            self.counter += 1
+            print(f"Val Loss DOES NOT DECREASE! Warn Overfitting: {self.counter}/{self.patience}")
+            
+            if self.counter >= self.patience:
+                self.early_stop = True 

@@ -1,0 +1,9 @@
+XceptionEvaluator | faceforensic++ | Acc: 0.9652 | AUC: 0.9912 | F1: 0.9780
+XceptionEvaluator | celebdf | Acc: 0.7440 | AUC: 0.8186 | F1: 0.7362
+XceptionEvaluator | wilddf | Acc: 0.6155 | AUC: 0.6637 | F1: 0.6707
+EffNetB4Evaluator | faceforensic++ | Acc: 0.9673 | AUC: 0.9906 | F1: 0.9794
+EffNetB4Evaluator | celebdf | Acc: 0.7213 | AUC: 0.8049 | F1: 0.7193
+EffNetB4Evaluator | wilddf | Acc: 0.5759 | AUC: 0.6277 | F1: 0.6641
+ResNetEvaluator | faceforensic++ | Acc: 0.9724 | AUC: 0.9928 | F1: 0.9827
+ResNetEvaluator | celebdf | Acc: 0.6773 | AUC: 0.7715 | F1: 0.7316
+ResNetEvaluator | wilddf | Acc: 0.5451 | AUC: 0.6190 | F1: 0.6571

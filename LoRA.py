@@ -39,4 +39,7 @@ def merge_lora(backbone: nn.Module, rank=4, alpha=16):
     for name, param in backbone.named_parameters():
         if 'lora' in name or 'norm' in name or 'head' in name:
             param.requires_grad = True
+
+    trainable_params = sum(p.numel() for p in backbone.parameters() if p.requires_grad)
+    print(f"[LoRA] Trainable parameters (LoRA + MLP): {trainable_params:,}")
     print("Applied LoRA to module")
