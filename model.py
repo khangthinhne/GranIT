@@ -65,9 +65,9 @@ class LocalBranch(nn.Module):
         _, cls_tokens, patch_tokens = self.model(x_crop)
         return cls_tokens, patch_tokens 
         
-    
+
 class GranIT(nn.Module):
-    def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
+    def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512, has_global=True):
         super().__init__()
         
         

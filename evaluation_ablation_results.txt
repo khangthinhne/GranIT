@@ -1,0 +1,90 @@
+
+[2026-03-17 09:37:49] Model: GranIT_LocalOnly_BEST_AUC.pth | Dataset: faceforensic++
+--------------------------------------------------
+Total Samples  : 49994
+Accuracy       : 0.9345
+AUC Score      : 0.9851
+Precision      : 0.9866
+Recall         : 0.9307
+F1 Score       : 0.9579
+--------------------------------------------------
+
+[2026-03-17 09:40:26] Model: GranIT_LocalOnly_BEST_AUC.pth | Dataset: celebdf
+--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7633
+AUC Score      : 0.8476
+Precision      : 0.7882
+Recall         : 0.7210
+F1 Score       : 0.7531
+--------------------------------------------------
+
+[2026-03-17 09:42:10] Model: GranIT_LocalOnly_BEST_AUC.pth | Dataset: wilddf
+--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.5884
+AUC Score      : 0.6590
+Precision      : 0.6084
+Recall         : 0.5056
+F1 Score       : 0.5522
+--------------------------------------------------
+
+[2026-03-17 09:53:01] Model: GranIT_MicroOnly_BEST_AUC.pth | Dataset: faceforensic++
+--------------------------------------------------
+Total Samples  : 49994
+Accuracy       : 0.9369
+AUC Score      : 0.9779
+Precision      : 0.9687
+Recall         : 0.9518
+F1 Score       : 0.9602
+--------------------------------------------------
+
+[2026-03-17 09:55:26] Model: GranIT_MicroOnly_BEST_AUC.pth | Dataset: celebdf
+--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.6756
+AUC Score      : 0.7965
+Precision      : 0.6281
+Recall         : 0.8628
+F1 Score       : 0.7270
+--------------------------------------------------
+
+[2026-03-17 09:57:10] Model: GranIT_MicroOnly_BEST_AUC.pth | Dataset: wilddf
+--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.5576
+AUC Score      : 0.6327
+Precision      : 0.5573
+Recall         : 0.5786
+F1 Score       : 0.5677
+--------------------------------------------------
+
+[2026-03-17 10:29:21] Model: GranIT_GlobalOnly_BEST_AUC.pth | Dataset: faceforensic++
+--------------------------------------------------
+Total Samples  : 49994
+Accuracy       : 0.9477
+AUC Score      : 0.9897
+Precision      : 0.9895
+Recall         : 0.9446
+F1 Score       : 0.9665
+--------------------------------------------------
+
+[2026-03-17 10:31:03] Model: GranIT_GlobalOnly_BEST_AUC.pth | Dataset: celebdf
+--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7829
+AUC Score      : 0.8725
+Precision      : 0.8025
+Recall         : 0.7510
+F1 Score       : 0.7759
+--------------------------------------------------
+
+[2026-03-17 10:32:02] Model: GranIT_GlobalOnly_BEST_AUC.pth | Dataset: wilddf
+--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.5941
+AUC Score      : 0.6570
+Precision      : 0.5885
+Recall         : 0.6371
+F1 Score       : 0.6118
+--------------------------------------------------

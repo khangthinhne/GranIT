@@ -5,18 +5,20 @@ import torch
 from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from torchvision import transforms
 from PIL import Image
-from data_preparation.dataset_models import FaceForensicsDataset, CelebDFDataset, WildDeepfakeDataset
+from data_preparation.dataset_models import FaceForensicsDataset, CelebDFDataset, WildDeepfakeDataset, DFDCDataset
 
 DATASET_REGISTRY = {
     'faceforensic++': FaceForensicsDataset,
     'celebdf': CelebDFDataset,
-    'wilddf': WildDeepfakeDataset
+    'wilddf': WildDeepfakeDataset,
+    'dfdc': DFDCDataset
 }
 
 DATA_DIR = {
     'faceforensic++': 'data/faces_processed',
     'celebdf': 'data/celebdf_processed' ,
-    'wilddf': 'data/test/wilddf_processed'        
+    'wilddf': 'data/test/wilddf_processed',
+    'dfdc':    "D:/Project/model_testing/data/test/frames\DFDC"
 }
 
 VAL_SPLIT = 0.2

@@ -4,8 +4,8 @@ from sklearn.metrics import roc_auc_score, accuracy_score, f1_score
 import os
 from tqdm import tqdm
 import timm 
+# from ..data_preparation.dataset import get_dataloaders
 from data_preparation.dataset import get_dataloaders
-
 class BaseEvaluator:
     def __init__(self, model_path, dataset_name='celebdf', batch_size=16):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,7 +17,7 @@ class BaseEvaluator:
         self.load_weights()
 
     def build_model(self):
-        raise NotImplementedError("Phải định nghĩa kiến trúc model!")
+        raise NotImplementedError("not implemented")
 
     def load_weights(self):
         try:
@@ -65,7 +65,7 @@ class BaseEvaluator:
         print(f"   - F1 Score : {f1:.4f}")
         print("-" * 50)
         
-        with open("evaluation_baselines_results.txt", "a") as f:
+        with open("baseline/evaluation_baselines_results.txt", "a") as f:
             f.write(f"{self.__class__.__name__} | {self.dataset_name} | Acc: {acc:.4f} | AUC: {auc:.4f} | F1: {f1:.4f}\n")
 
 
@@ -91,12 +91,13 @@ class GranITEvaluator(BaseEvaluator):
         return logits
     
 if __name__ == "__main__":
-    datasets_to_test = ['faceforensic++', 'celebdf', 'wilddf']
+    datasets_to_test = ['dfdc']
     
     models_to_test = [
-        (XceptionEvaluator, "models/sota_xception_BEST.pth"),
-        (EffNetB4Evaluator, "models/sota_efficientnet_BEST.pth"),
-        (ResNetEvaluator,   "models/sota_resnet50_BEST.pth")
+        # (XceptionEvaluator, "models/sota_xception_BEST.pth"),
+        # (EffNetB4Evaluator, "models/sota_efficientnet_BEST.pth"),
+        # (ResNetEvaluator,   "models/sota_resnet50_BEST.pth")
+        (GranITEvaluator, "checkpoints/GranIT_BEST_AUC.pth")
     ]
     
     for EvaluatorClass, weight_path in models_to_test:
