@@ -12,15 +12,16 @@ from datetime import datetime
 from data_preparation.dataset import get_dataloaders
 from model import GranIT
 import config
-
+from ablation_training import GranIT_Global_Local, GranIT_GlobalOnly, GranIT_Local_Micro, GranIT_LocalOnly, GranIT_MicroOnly
 def get_args():
     parser = argparse.ArgumentParser(description='Evaluate GranIT Model on cross datasets')
+    parser.add_argument('--ablation_model', type=str, choices=['only_global', 'only_local', 'only_micro', 'local_micro', 'global_local'])
     parser.add_argument('--dataset', type=str, default='faceforensic++', choices=['faceforensic++', 'celebdf', 'wilddf', 'dfdc'], help='Target dataset for evaluation')
     parser.add_argument('--model_path', type=str, required=True, help='Path to the trained model weights (.pth)')
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size for evaluation')
-    parser.add_argument('--vis_dir', type=str, default='./visualizations', help='Directory to save visualization images')
-    parser.add_argument('--log_file', type=str, default='evaluation_results.txt', help='Path to save evaluation metrics')
-    parser.add_argument('--num_vis', type=int, default=20, help='Number of images to visualize and save')
+    parser.add_argument('--vis_dir', type=str, default='./visualizations/ablation', help='Directory to save visualization images')
+    parser.add_argument('--log_file', type=str, default='evaluation_ablation_results.txt', help='Path to save evaluation metrics')
+    parser.add_argument('--num_vis', type=int, default=10, help='Number of images to visualize and save')
     return parser.parse_args()
 
 def denormalize_image(tensor):
@@ -62,8 +63,20 @@ def evaluate_and_visualize(args):
     print(f"Evaluating on {device.type.upper()}...")
 
     test_loader = get_dataloaders(mode='testing', batch_size=args.batch_size, dataset_model=args.dataset)
-
-    model = GranIT().to(device)
+    # Model init
+    if args.ablation_model == 'only_global':
+        model = GranIT_GlobalOnly()
+    elif args.ablation_model == 'only_local':
+        model = GranIT_LocalOnly()
+    elif args.ablation_model == 'only_micro':
+        model = GranIT_MicroOnly()
+    elif args.ablation_model == 'local_micro':
+        model = GranIT_Local_Micro()
+    elif args.ablation_model == 'global_local':
+        model = GranIT_Global_Local()
+    else:
+        raise ValueError(f'There is no ablation models named {args.ablation_model}!')
+    model = model.to(device)
     
     try:
         model.load_state_dict(torch.load(args.model_path, map_location=device))
@@ -90,7 +103,7 @@ def evaluate_and_visualize(args):
             with torch.cuda.amp.autocast():
                 logits, theta, attn_weight = model(images)
             
-            probs = torch.softmax(logits, dim=1)[:, 1] 
+            probs = torch.softmax(logits.float(), dim=1)[:, 1] 
             _, preds = torch.max(logits, 1)
 
             all_labels.extend(labels.cpu().numpy())
@@ -101,20 +114,22 @@ def evaluate_and_visualize(args):
                 for j in range(images.size(0)):
                     if images_saved >= args.num_vis: 
                         break
-                    
-                    t = theta[j].cpu().numpy()
-                    s_x, s_y = t[0, 0], t[1, 1]
-                    t_x, t_y = t[0, 2], t[1, 2]
-
                     img_bgr = denormalize_image(images[j])
-                    H, W, _ = img_bgr.shape
-                    
-                    x1, y1, x2, y2 = get_stn_box(t_x, t_y, s_x, s_y, W, H)
-
                     is_correct = labels[j].item() == preds[j].item()
                     color = (0, 255, 0) if is_correct else (0, 0, 255)
                     
-                    cv2.rectangle(img_bgr, (x1, y1), (x2, y2), color, 3)
+                    if theta is not None:
+                        t = theta[j].cpu().numpy()
+                        s_x, s_y = t[0, 0], t[1, 1]
+                        t_x, t_y = t[0, 2], t[1, 2]
+
+                        H, W, _ = img_bgr.shape
+                        
+                        x1, y1, x2, y2 = get_stn_box(t_x, t_y, s_x, s_y, W, H)
+
+                        
+                        
+                        cv2.rectangle(img_bgr, (x1, y1), (x2, y2), color, 3)
                     
                     true_txt = "Real" if labels[j].item() == 0 else "Fake"
                     pred_txt = "Real" if preds[j].item() == 0 else "Fake"

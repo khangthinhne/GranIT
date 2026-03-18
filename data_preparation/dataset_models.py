@@ -62,3 +62,19 @@ class WildDeepfakeDataset(BaseDeepfakeDataset):
     def extract_video_id(img_path):
         folder_path = os.path.dirname(img_path)
         return folder_path 
+    
+
+class DFDCDataset(BaseDeepfakeDataset):
+    def get_label(self, img_path):
+        # Giữ đúng logic ông vừa viết
+        return 0 if "0_Real" in img_path else 1
+
+    @staticmethod
+    def extract_video_id(img_path):
+        # Tương tự như FaceForensics: Lấy tên thư mục + phần đầu của tên file
+        # VD: .../0_Real/atkdltyyen_265_0.jpg -> .../0_Real/atkdltyyen
+        folder_path = os.path.dirname(img_path)
+        filename = os.path.basename(img_path)
+        video_id = filename.split('_')[0]
+        
+        return os.path.join(folder_path, video_id)

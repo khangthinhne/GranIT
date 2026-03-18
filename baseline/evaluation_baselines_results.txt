@@ -7,3 +7,7 @@ EffNetB4Evaluator | wilddf | Acc: 0.5759 | AUC: 0.6277 | F1: 0.6641
 ResNetEvaluator | faceforensic++ | Acc: 0.9724 | AUC: 0.9928 | F1: 0.9827
 ResNetEvaluator | celebdf | Acc: 0.6773 | AUC: 0.7715 | F1: 0.7316
 ResNetEvaluator | wilddf | Acc: 0.5451 | AUC: 0.6190 | F1: 0.6571
+XceptionEvaluator | dfdc | Acc: 0.4599 | AUC: 0.5484 | F1: 0.5438
+EffNetB4Evaluator | dfdc | Acc: 0.7441 | AUC: 0.5974 | F1: 0.8492
+ResNetEvaluator | dfdc | Acc: 0.7756 | AUC: 0.5562 | F1: 0.8728
+GranITEvaluator | dfdc | Acc: 0.6052 | AUC: 0.7516 | F1: 0.6863
