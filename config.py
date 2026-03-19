@@ -25,7 +25,7 @@ LORA_RANK = 8
 LORA_ALPHA = 16
 
 # AFC (Local Branch)
-MARGIN_BETA = 1.3
+BETA = 1.3
 SCALE_MIN = 0.4
 SCALE_MAX = 0.9
 

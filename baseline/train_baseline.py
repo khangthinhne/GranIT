@@ -96,7 +96,7 @@ class BaseBaselinePipeline:
 
             scheduler.step()
 
-            print(f"📊 Epoch {epoch+1}: Train Loss {epoch_train_loss:.4f} | Val Loss {epoch_val_loss:.4f} | Val AUC {epoch_val_auc:.4f}")
+            print(f"Epoch {epoch+1}: Train Loss {epoch_train_loss:.4f} | Val Loss {epoch_val_loss:.4f} | Val AUC {epoch_val_auc:.4f}")
 
             with open(log_file, mode='a', newline='') as f:
                 f.write(f"{epoch+1},{epoch_train_loss:.4f},{epoch_val_loss:.4f},{epoch_val_auc:.4f}\n")
@@ -158,3 +158,4 @@ class EffNetB4Pipeline(BaseBaselinePipeline):
 class ResNet50Pipeline(BaseBaselinePipeline):
     def build_model(self):
         return timm.create_model('resnet50', pretrained=True, num_classes=2)
+    
