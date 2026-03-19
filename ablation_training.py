@@ -19,7 +19,6 @@ import config
 import argparse
  
 
-
 class GranIT_GlobalOnly(nn.Module):
     def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
         super().__init__()
@@ -158,9 +157,27 @@ class GranIT_Global_Local(nn.Module):
         
         return logits, theta, attn_weights
 
+class GranIT_Margin(nn.Module):
+    def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
+        super().__init__()
+        self.vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
+        self.mlp = nn.Sequential(
+            nn.Linear(embed_dim, hidden_dim), 
+            nn.GELU(),                   
+            nn.Dropout(p=0.2),
+            nn.Linear(hidden_dim, num_classes)
+        )
+
+    def forward(self, x):
+        _, cls, _ = self.vit(x, return_tokens=True)
+        logits = self.mlp(cls)
+        return logits, None, None
+
 def get_args():
     parser = argparse.ArgumentParser(description='GranIT - Granularity-Adaptive Interrogation Transformer')
-    parser.add_argument('--ablation_model', type=str, choices=['only_global', 'only_local', 'only_micro', 'local_micro', 'global_local'])
+    parser.add_argument('--ablation_model', type=str, choices=['only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin'])
+    parser.add_argument('--crop_margin', type=float, default=1.5)
+    parser.add_argument('--batch_size', type=int, default=config.BATCH_SIZE)
     parser.add_argument('--data_dir', type=str, default=config.DATA_DIR)
     parser.add_argument('--save_name', type=str, default=config.MODEL_NAME)
     return parser.parse_args()
@@ -186,21 +203,8 @@ def loss_function(logits, labels, theta, criterion_ce):
     
     return total_loss, loss_ce, loss_trans, loss_scale
 
-def train_model():
-    torch.backends.cuda.matmul.allow_tf32 = True
-    cudnn.benchmark = True
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print("Device: ", device)
-    args = get_args()
-    # Data preparation
-    data_dir = args.data_dir 
-    train_loader, val_loader = get_dataloaders(
-        mode='training', 
-        batch_size=config.BATCH_SIZE, 
-        dataset_model='faceforensic++'
-    )
 
-    # Model init
+def get_model(args):
     if args.ablation_model == 'only_global':
         model = GranIT_GlobalOnly()
     elif args.ablation_model == 'only_local':
@@ -211,8 +215,35 @@ def train_model():
         model = GranIT_Local_Micro()
     elif args.ablation_model == 'global_local':
         model = GranIT_Global_Local()
+    elif args.ablation_model == 'margin':
+        model = GranIT_Margin()
     else:
         raise ValueError(f'There is no ablation models named {args.ablation_model}!')
+    
+    print(f"Init [{model.__class__.__name__}] model")
+    return model
+
+def train_model():
+    torch.backends.cuda.matmul.allow_tf32 = True
+    cudnn.benchmark = True
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Device: ", device)
+    args = get_args()
+    # Data preparation
+    config.BETA = args.crop_margin
+    config.BATCH_SIZE = args.batch_size
+    print(f"BETA = {config.BETA}")
+    print(f"BATCH SIZE: {config.BATCH_SIZE}")
+    data_dir = args.data_dir 
+    train_loader, val_loader = get_dataloaders(
+        mode='training', 
+        batch_size=config.BATCH_SIZE, 
+        dataset_model='faceforensic++',
+        crop_margin=args.crop_margin
+    )
+
+    # Model init
+    model = get_model(args=args)
     
     model = model.to(device)
 
@@ -221,11 +252,15 @@ def train_model():
                             lr=config.LEARNING_RATE, weight_decay=1e-4)
     criterion_ce = nn.CrossEntropyLoss() 
     scaler = torch.cuda.amp.GradScaler()
+    if args.ablation_model == 'margin':
+        model_name = f"{model.__class__.__name__}_{config.BETA}"
+    else:
+        model_name = f"{model.__class__.__name__}"
     early_stopping = DualEarlyStopping(
         patience=5, 
         delta=0.0001, 
         save_dir=config.SAVE_MODEL_DIR, 
-        model_name=f"{model.__class__.__name__}_model"
+        model_name=model_name
     )
     print(f"\nStart training on {model.__class__.__name__} branch...")
     # Warm up
@@ -247,7 +282,10 @@ def train_model():
         scheduler = warmup_scheduler
 
     # file log
-    log_file = os.path.join(config.LOG_DIR,f"training_log_{args.ablation_model}_model.csv")
+    log_path = f"training_log_{args.ablation_model}_model.csv"
+    if args.ablation_model == 'margin':
+        log_path = f"training_log_{args.ablation_model}_{config.BETA}_model.csv"
+    log_file = os.path.join(config.LOG_DIR, log_path)
     with open(log_file, mode='w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['Epoch', 'Train_Loss', 'Train_Acc', 'Val_Loss', 'Val_Acc', 'Val_AUC'])

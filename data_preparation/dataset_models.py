@@ -1,11 +1,12 @@
 import os
 from torch.utils.data import Dataset
 from PIL import Image
-
+import config
 class BaseDeepfakeDataset(Dataset):
-    def __init__(self, image_paths, transform=None):
+    def __init__(self, image_paths, transform=None, crop_margin=1.5):
         self.image_paths = image_paths
         self.transform = transform
+        self.crop_margin = crop_margin
 
     def __len__(self):
         return len(self.image_paths)
@@ -22,17 +23,33 @@ class BaseDeepfakeDataset(Dataset):
             print(f"Fail {img_path}: {e}")
             image = Image.open(self.image_paths[0]).convert('RGB')
 
+        target_beta = self.crop_margin
+
+        # print("FF++: BETA: ", target_beta)
+        if target_beta < 1.5:
+            ratio = target_beta / 1.5
+            w, h = image.size
+            
+            new_w, new_h = w * ratio, h * ratio
+            left = (w - new_w) / 2
+            top = (h - new_h) / 2
+            right = (w + new_w) / 2
+            bottom = (h + new_h) / 2
+    
+            image = image.crop((left, top, right, bottom))
+
         if self.transform:
             image = self.transform(image)
 
-        # Gọi hàm get_label của class Con tương ứng
         label = self.get_label(img_path)
 
         return image, label
 
 class FaceForensicsDataset(BaseDeepfakeDataset):
     def get_label(self, img_path):
-        return 0 if "original" in img_path else 1
+        label = 0 if "original" in img_path else 1
+        # print(label)
+        return label
 
     @staticmethod
     def extract_video_id(img_path):

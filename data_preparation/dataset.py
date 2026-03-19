@@ -22,7 +22,7 @@ DATA_DIR = {
 }
 
 VAL_SPLIT = 0.2
-def get_dataloaders(mode='training', batch_size=8, dataset_model='faceforensic++'):
+def get_dataloaders(mode='training', batch_size=8, dataset_model='faceforensic++', crop_margin=1.5):
     """
     mode: 'training' -> (train_loader, val_loader),  'testing' -> (test_loader)
     """
@@ -30,6 +30,12 @@ def get_dataloaders(mode='training', batch_size=8, dataset_model='faceforensic++
         raise ValueError(f"Need to check dataset registry: {list(DATASET_REGISTRY.keys())}")
 
     dir_path = DATA_DIR[dataset_model]
+    if mode == 'testing' and dataset_model == 'faceforensic++':
+        print(f"Testing on FF++")
+        dir_path = 'data/faces_processed_split/test'
+    elif mode == 'training' and dataset_model == 'faceforensic++':
+        dir_path = 'data/faces_processed_split/train'
+
     DatasetClass = DATASET_REGISTRY[dataset_model]
     exts = ["*.jpg", "*.jpeg", "*.png"]
     all_images = []
@@ -75,8 +81,8 @@ def get_dataloaders(mode='training', batch_size=8, dataset_model='faceforensic++
 
         print(f"[{dataset_model.upper()}] Training: {len(train_paths)} ảnh | Validation: {len(val_paths)} ảnh")
 
-        train_dataset = DatasetClass(train_paths, transform=train_transforms)
-        val_dataset = DatasetClass(val_paths, transform=val_test_transforms)
+        train_dataset = DatasetClass(train_paths, transform=train_transforms, crop_margin=crop_margin)
+        val_dataset = DatasetClass(val_paths, transform=val_test_transforms, crop_margin=crop_margin)
 
         train_labels = [train_dataset.get_label(p) for p in train_paths]
         class_counts = [train_labels.count(0), train_labels.count(1)]
@@ -93,6 +99,6 @@ def get_dataloaders(mode='training', batch_size=8, dataset_model='faceforensic++
 
     elif mode == 'testing':
         print(f"[{dataset_model.upper()}] Full Testing: {len(all_images)} images")
-        test_dataset = DatasetClass(all_images, transform=val_test_transforms)
+        test_dataset = DatasetClass(all_images, transform=val_test_transforms, crop_margin=crop_margin)
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2, pin_memory=True)
         return test_loader
