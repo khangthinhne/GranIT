@@ -698,3 +698,683 @@ Precision      : 0.9647
 Recall         : 0.9464
 F1 Score       : 0.9554
 --------------------------------------------------
+
+[2026-03-19 18:28:20] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9448
+AUC Score      : 0.9818
+Precision      : 0.9681
+Recall         : 0.9627
+F1 Score       : 0.9654
+--------------------------------------------------
+
+[2026-03-19 18:29:31] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9305
+AUC Score      : 0.9732
+Precision      : 0.9613
+Recall         : 0.9514
+F1 Score       : 0.9563
+--------------------------------------------------
+
+[2026-03-19 18:30:58] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9168
+AUC Score      : 0.9679
+Precision      : 0.9652
+Recall         : 0.9295
+F1 Score       : 0.9470
+--------------------------------------------------
+
+[2026-03-19 18:32:09] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8923
+AUC Score      : 0.9536
+Precision      : 0.9608
+Recall         : 0.9021
+F1 Score       : 0.9305
+--------------------------------------------------
+
+[2026-03-19 18:33:20] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8768
+AUC Score      : 0.9382
+Precision      : 0.9547
+Recall         : 0.8881
+F1 Score       : 0.9202
+--------------------------------------------------
+
+[2026-03-19 18:34:50] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8446
+AUC Score      : 0.9227
+Precision      : 0.9543
+Recall         : 0.8462
+F1 Score       : 0.8970
+--------------------------------------------------
+
+[2026-03-19 18:36:20] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9502
+AUC Score      : 0.9845
+Precision      : 0.9607
+Recall         : 0.9777
+F1 Score       : 0.9691
+--------------------------------------------------
+
+[2026-03-19 18:37:50] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9532
+AUC Score      : 0.9849
+Precision      : 0.9724
+Recall         : 0.9690
+F1 Score       : 0.9707
+--------------------------------------------------
+
+[2026-03-19 18:39:18] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9394
+AUC Score      : 0.9816
+Precision      : 0.9774
+Recall         : 0.9461
+F1 Score       : 0.9615
+--------------------------------------------------
+
+[2026-03-19 18:42:01] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9448
+AUC Score      : 0.9818
+Precision      : 0.9681
+Recall         : 0.9627
+F1 Score       : 0.9654
+--------------------------------------------------
+
+[2026-03-19 18:43:28] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9305
+AUC Score      : 0.9732
+Precision      : 0.9613
+Recall         : 0.9514
+F1 Score       : 0.9563
+--------------------------------------------------
+
+[2026-03-19 18:44:38] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9168
+AUC Score      : 0.9679
+Precision      : 0.9652
+Recall         : 0.9295
+F1 Score       : 0.9470
+--------------------------------------------------
+
+[2026-03-19 18:45:48] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8923
+AUC Score      : 0.9536
+Precision      : 0.9608
+Recall         : 0.9021
+F1 Score       : 0.9305
+--------------------------------------------------
+
+[2026-03-19 18:46:58] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8768
+AUC Score      : 0.9382
+Precision      : 0.9547
+Recall         : 0.8881
+F1 Score       : 0.9202
+--------------------------------------------------
+
+[2026-03-19 18:48:08] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8446
+AUC Score      : 0.9227
+Precision      : 0.9543
+Recall         : 0.8462
+F1 Score       : 0.8970
+--------------------------------------------------
+
+[2026-03-19 18:49:20] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.7984
+AUC Score      : 0.9034
+Precision      : 0.9607
+Recall         : 0.7799
+F1 Score       : 0.8609
+--------------------------------------------------
+
+[2026-03-19 18:50:31] Model: GranIT_Margin_0.8_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.7679
+AUC Score      : 0.8812
+Precision      : 0.9502
+Recall         : 0.7492
+F1 Score       : 0.8378
+--------------------------------------------------
+
+[2026-03-19 18:51:43] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9502
+AUC Score      : 0.9845
+Precision      : 0.9607
+Recall         : 0.9777
+F1 Score       : 0.9691
+--------------------------------------------------
+
+[2026-03-19 18:52:53] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9532
+AUC Score      : 0.9849
+Precision      : 0.9724
+Recall         : 0.9690
+F1 Score       : 0.9707
+--------------------------------------------------
+
+[2026-03-19 18:54:03] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9394
+AUC Score      : 0.9816
+Precision      : 0.9774
+Recall         : 0.9461
+F1 Score       : 0.9615
+--------------------------------------------------
+
+[2026-03-19 18:55:13] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9145
+AUC Score      : 0.9740
+Precision      : 0.9797
+Recall         : 0.9120
+F1 Score       : 0.9446
+--------------------------------------------------
+
+[2026-03-19 18:56:23] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8815
+AUC Score      : 0.9618
+Precision      : 0.9793
+Recall         : 0.8702
+F1 Score       : 0.9215
+--------------------------------------------------
+
+[2026-03-19 18:57:33] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8465
+AUC Score      : 0.9509
+Precision      : 0.9809
+Recall         : 0.8241
+F1 Score       : 0.8957
+--------------------------------------------------
+
+[2026-03-19 18:58:44] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.7787
+AUC Score      : 0.9341
+Precision      : 0.9847
+Recall         : 0.7348
+F1 Score       : 0.8416
+--------------------------------------------------
+
+[2026-03-19 18:59:54] Model: GranIT_Margin_0.9_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.7425
+AUC Score      : 0.9166
+Precision      : 0.9814
+Recall         : 0.6913
+F1 Score       : 0.8112
+--------------------------------------------------
+
+[2026-03-19 19:01:08] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9324
+AUC Score      : 0.9722
+Precision      : 0.9360
+Recall         : 0.9826
+F1 Score       : 0.9588
+--------------------------------------------------
+
+[2026-03-19 19:02:18] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9315
+AUC Score      : 0.9766
+Precision      : 0.9344
+Recall         : 0.9834
+F1 Score       : 0.9583
+--------------------------------------------------
+
+[2026-03-19 19:03:27] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9424
+AUC Score      : 0.9808
+Precision      : 0.9534
+Recall         : 0.9756
+F1 Score       : 0.9644
+--------------------------------------------------
+
+[2026-03-19 19:04:37] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9398
+AUC Score      : 0.9790
+Precision      : 0.9619
+Recall         : 0.9629
+F1 Score       : 0.9624
+--------------------------------------------------
+
+[2026-03-19 19:05:46] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9313
+AUC Score      : 0.9735
+Precision      : 0.9602
+Recall         : 0.9536
+F1 Score       : 0.9569
+--------------------------------------------------
+
+[2026-03-19 19:06:57] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9145
+AUC Score      : 0.9659
+Precision      : 0.9634
+Recall         : 0.9283
+F1 Score       : 0.9456
+--------------------------------------------------
+
+[2026-03-19 19:08:09] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8840
+AUC Score      : 0.9573
+Precision      : 0.9724
+Recall         : 0.8800
+F1 Score       : 0.9239
+--------------------------------------------------
+
+[2026-03-19 19:09:20] Model: GranIT_Margin_1.0_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8582
+AUC Score      : 0.9464
+Precision      : 0.9743
+Recall         : 0.8449
+F1 Score       : 0.9050
+--------------------------------------------------
+
+[2026-03-19 19:10:31] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9224
+AUC Score      : 0.9771
+Precision      : 0.9801
+Recall         : 0.9217
+F1 Score       : 0.9500
+--------------------------------------------------
+
+[2026-03-19 19:11:42] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9355
+AUC Score      : 0.9790
+Precision      : 0.9730
+Recall         : 0.9456
+F1 Score       : 0.9591
+--------------------------------------------------
+
+[2026-03-19 19:12:54] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9356
+AUC Score      : 0.9820
+Precision      : 0.9773
+Recall         : 0.9414
+F1 Score       : 0.9590
+--------------------------------------------------
+
+[2026-03-19 19:14:05] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9290
+AUC Score      : 0.9791
+Precision      : 0.9793
+Recall         : 0.9308
+F1 Score       : 0.9545
+--------------------------------------------------
+
+[2026-03-19 19:15:17] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9250
+AUC Score      : 0.9727
+Precision      : 0.9703
+Recall         : 0.9349
+F1 Score       : 0.9522
+--------------------------------------------------
+
+[2026-03-19 19:16:28] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9141
+AUC Score      : 0.9654
+Precision      : 0.9630
+Recall         : 0.9282
+F1 Score       : 0.9453
+--------------------------------------------------
+
+[2026-03-19 19:17:39] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8836
+AUC Score      : 0.9562
+Precision      : 0.9713
+Recall         : 0.8805
+F1 Score       : 0.9237
+--------------------------------------------------
+
+[2026-03-19 19:18:51] Model: GranIT_Margin_1.1_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8518
+AUC Score      : 0.9486
+Precision      : 0.9778
+Recall         : 0.8336
+F1 Score       : 0.9000
+--------------------------------------------------
+
+[2026-03-19 19:20:03] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9287
+AUC Score      : 0.9702
+Precision      : 0.9504
+Recall         : 0.9610
+F1 Score       : 0.9557
+--------------------------------------------------
+
+[2026-03-19 19:21:14] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9321
+AUC Score      : 0.9728
+Precision      : 0.9473
+Recall         : 0.9690
+F1 Score       : 0.9580
+--------------------------------------------------
+
+[2026-03-19 19:22:26] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9367
+AUC Score      : 0.9765
+Precision      : 0.9622
+Recall         : 0.9585
+F1 Score       : 0.9603
+--------------------------------------------------
+
+[2026-03-19 19:23:37] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9364
+AUC Score      : 0.9773
+Precision      : 0.9635
+Recall         : 0.9567
+F1 Score       : 0.9601
+--------------------------------------------------
+
+[2026-03-19 19:24:49] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9342
+AUC Score      : 0.9748
+Precision      : 0.9568
+Recall         : 0.9611
+F1 Score       : 0.9590
+--------------------------------------------------
+
+[2026-03-19 19:26:00] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9301
+AUC Score      : 0.9715
+Precision      : 0.9613
+Recall         : 0.9509
+F1 Score       : 0.9561
+--------------------------------------------------
+
+[2026-03-19 19:27:12] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9077
+AUC Score      : 0.9643
+Precision      : 0.9682
+Recall         : 0.9146
+F1 Score       : 0.9406
+--------------------------------------------------
+
+[2026-03-19 19:28:23] Model: GranIT_Margin_1.2_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8995
+AUC Score      : 0.9586
+Precision      : 0.9668
+Recall         : 0.9055
+F1 Score       : 0.9351
+--------------------------------------------------
+
+[2026-03-19 19:29:35] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9184
+AUC Score      : 0.9640
+Precision      : 0.9544
+Recall         : 0.9430
+F1 Score       : 0.9487
+--------------------------------------------------
+
+[2026-03-19 19:30:47] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9288
+AUC Score      : 0.9708
+Precision      : 0.9460
+Recall         : 0.9661
+F1 Score       : 0.9560
+--------------------------------------------------
+
+[2026-03-19 19:31:59] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9357
+AUC Score      : 0.9759
+Precision      : 0.9535
+Recall         : 0.9667
+F1 Score       : 0.9601
+--------------------------------------------------
+
+[2026-03-19 19:33:11] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9338
+AUC Score      : 0.9753
+Precision      : 0.9524
+Recall         : 0.9655
+F1 Score       : 0.9589
+--------------------------------------------------
+
+[2026-03-19 19:34:22] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9345
+AUC Score      : 0.9746
+Precision      : 0.9475
+Recall         : 0.9720
+F1 Score       : 0.9596
+--------------------------------------------------
+
+[2026-03-19 19:35:34] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9263
+AUC Score      : 0.9704
+Precision      : 0.9409
+Recall         : 0.9687
+F1 Score       : 0.9546
+--------------------------------------------------
+
+[2026-03-19 19:36:46] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9210
+AUC Score      : 0.9644
+Precision      : 0.9534
+Recall         : 0.9475
+F1 Score       : 0.9505
+--------------------------------------------------
+
+[2026-03-19 19:37:57] Model: GranIT_Margin_1.3_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9150
+AUC Score      : 0.9617
+Precision      : 0.9513
+Recall         : 0.9420
+F1 Score       : 0.9466
+--------------------------------------------------
+
+[2026-03-19 22:15:16] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.8--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8766
+AUC Score      : 0.9533
+Precision      : 0.9666
+Recall         : 0.8760
+F1 Score       : 0.9191
+--------------------------------------------------
+
+[2026-03-19 22:16:26] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 0.9--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9165
+AUC Score      : 0.9637
+Precision      : 0.9592
+Recall         : 0.9354
+F1 Score       : 0.9471
+--------------------------------------------------
+
+[2026-03-19 22:17:36] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.0--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9199
+AUC Score      : 0.9698
+Precision      : 0.9687
+Recall         : 0.9298
+F1 Score       : 0.9489
+--------------------------------------------------
+
+[2026-03-19 22:18:46] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.1--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9231
+AUC Score      : 0.9708
+Precision      : 0.9627
+Recall         : 0.9402
+F1 Score       : 0.9514
+--------------------------------------------------
+
+[2026-03-19 22:19:56] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.2--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9278
+AUC Score      : 0.9725
+Precision      : 0.9612
+Recall         : 0.9480
+F1 Score       : 0.9545
+--------------------------------------------------
+
+[2026-03-19 22:21:06] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.3--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9291
+AUC Score      : 0.9723
+Precision      : 0.9592
+Recall         : 0.9519
+F1 Score       : 0.9555
+--------------------------------------------------
+
+[2026-03-19 22:22:17] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.4--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9208
+AUC Score      : 0.9695
+Precision      : 0.9651
+Recall         : 0.9347
+F1 Score       : 0.9497
+--------------------------------------------------
+
+[2026-03-19 22:23:26] Model: GranIT_Margin_1.5_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9213
+AUC Score      : 0.9702
+Precision      : 0.9630
+Recall         : 0.9376
+F1 Score       : 0.9501
+--------------------------------------------------
+
+[2026-03-19 22:45:45] Model: GranIT_GlobalOnly_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.5383
+AUC Score      : 0.7042
+Precision      : 0.9122
+Recall         : 0.4713
+F1 Score       : 0.6215
+--------------------------------------------------
+
+[2026-03-19 22:51:38] Model: GranIT_LocalOnly_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.5845
+AUC Score      : 0.7486
+Precision      : 0.9435
+Recall         : 0.5142
+F1 Score       : 0.6656
+--------------------------------------------------
+
+[2026-03-19 22:57:41] Model: GranIT_MicroOnly_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.6547
+AUC Score      : 0.5041
+Precision      : 0.7955
+Recall         : 0.7680
+F1 Score       : 0.7815
+--------------------------------------------------
