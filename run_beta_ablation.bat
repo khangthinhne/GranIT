@@ -42,7 +42,7 @@ for %%m in (%MARGINS_testmodel%) do (
        
         python ablation_inference.py ^
             --ablation_model margin ^
-            --dataset faceforensic++ ^
+            --dataset faceforensic++ ^.
             --crop_margin %%b ^
             --model_path checkpoints/GranIT_Margin_%%m_BEST_AUC.pth ^
             --batch_size 32 ^

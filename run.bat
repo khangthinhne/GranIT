@@ -66,19 +66,19 @@
 @REM python ablation_inference.py --ablation_model only_global --dataset celebdf        --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model only_global --dataset wilddf         --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/WildDF
 
-python ablation_inference.py --ablation_model only_global --dataset dfdc         --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/WildDF
+@REM python ablation_inference.py --ablation_model only_global --dataset dfdc         --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/WildDF
 ::ONLY LOCAL
 @REM python ablation_inference.py --ablation_model only_local --dataset faceforensic++ --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/FaceForensic++
 @REM python ablation_inference.py --ablation_model only_local --dataset celebdf        --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model only_local --dataset wilddf         --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/WildDF
 
-python ablation_inference.py --ablation_model only_local --dataset dfdc         --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/WildDF
+@REM python ablation_inference.py --ablation_model only_local --dataset dfdc         --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/WildDF
 ::ONLY MICRO
 @REM python ablation_inference.py --ablation_model only_micro --dataset faceforensic++ --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/FaceForensic++
 @REM python ablation_inference.py --ablation_model only_micro --dataset celebdf        --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model only_micro --dataset wilddf         --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/WildDF
 
-python ablation_inference.py --ablation_model only_micro --dataset dfdc         --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/WildDF
+@REM python ablation_inference.py --ablation_model only_micro --dataset dfdc         --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/WildDF
 ::LOCAL + MICRO
 @REM python ablation_inference.py --ablation_model local_micro --dataset faceforensic++ --model_path checkpoints/GranIT_Local_Micro_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Local_Micro_BEST_AUC/FaceForensic++
 @REM python ablation_inference.py --ablation_model local_micro --dataset celebdf        --model_path checkpoints/GranIT_Local_Micro_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Local_Micro_BEST_AUC/CelebDF
