@@ -8,10 +8,28 @@ import torch.nn as nn
 import torch.nn.functional as F
 import timm
 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class ConstrainedHighPassFilter(nn.Module):
+    def __init__(self, in_channels=3, out_channels=3):
+        super().__init__()
+        self.weight = nn.Parameter(torch.randn(out_channels, 1, 3, 3))
+
+    def forward(self, x):
+        weight = self.weight.clone()
+        weight[:, :, 1, 1] = 0
+        sum_weight = weight.sum(dim=(2, 3), keepdim=True)
+        weight = weight / (sum_weight + 1e-8)
+        weight[:, :, 1, 1] = -1.0
+        return F.conv2d(x, weight, padding=1, groups=x.size(1))
 class LocalizationNetwork(nn.Module):
     def __init__(self, backbone_name='vit_base_patch16_clip_224.laion2b',pretrained=True, crop_size=(224,224)):
         super().__init__()
         from model import BaselineViT
+        self.high_pass_filter = ConstrainedHighPassFilter(3, 3)
+        self.fusion_conv = nn.Conv2d(6, 3, kernel_size=1, stride=1, padding=0)
         self.backbone = BaselineViT(model_name=backbone_name, pretrained=pretrained, num_classes=0)
         if hasattr(self.backbone, 'embed_dim'):
             self.embed_dim = self.backbone.embed_dim
@@ -27,11 +45,11 @@ class LocalizationNetwork(nn.Module):
         self.stn_head[2].weight.data.zero_()
         self.stn_head[2].bias.data.copy_(torch.Tensor([1,1,0,0]))
         self._freeze_base_weights()
-
+        
     def _freeze_base_weights(self):
 
         for name, param in self.named_parameters():
-            if 'lora' in name or 'stn_head' in name:
+            if 'lora' in name or 'stn_head' in name or 'high_pass_filter' in name or 'fusion_conv' in name:
                 param.requires_grad = True
             else:
                 param.requires_grad = False
@@ -39,7 +57,10 @@ class LocalizationNetwork(nn.Module):
         trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print(f"[{self.__class__.__name__}] Trainable parameters (LoRA + MLP): {trainable_params:,}")
     def forward(self, x):
-        features = self.backbone(x) # x: [B, 3, 224, 224] -> features: [B, 768]?
+        x_freq = self.high_pass_filter(x)
+        x_fused = torch.cat([x, x_freq], dim=1)
+        x_input_vit = self.fusion_conv(x_fused)
+        features = self.backbone(x_input_vit) # x: [B, 3, 224, 224] -> features: [B, 768]?
         theta_params = self.stn_head(features)
         return theta_params # [s_x, s_y, t_x, t_y]
 
@@ -81,17 +102,18 @@ class CascadedCrossScaleInterrogation(nn.Module):
         self.norm1_q = nn.LayerNorm(embed_dim)
         self.norm1_kv = nn.LayerNorm(embed_dim)
         self.cross_attn_1 = nn.MultiheadAttention(embed_dim=embed_dim, 
-                                                  num_heads=num_heads, 
-                                                  batch_first=True)
+                                                num_heads=num_heads, 
+                                                batch_first=True)
         
         # STAGE 2: GLOBAL INTERROGATES ENHANCED LOCAL
         self.norm2_q = nn.LayerNorm(embed_dim)
         self.norm2_kv = nn.LayerNorm(embed_dim)
         self.cross_attn_2 = nn.MultiheadAttention(embed_dim=embed_dim, 
-                                                  num_heads=num_heads, 
-                                                  batch_first=True)
+                                                num_heads=num_heads, 
+                                                batch_first=True)
 
     def forward(self, global_cls, local_patches, micro_patches):
+        global_cls = global_cls.unsqueeze(1) if global_cls.dim()==2 else global_cls
         # Stage 1: Local <- cross Micro
         q1 = self.norm1_q(local_patches)
         k1v = self.norm1_kv(micro_patches)          # share norm cho k & v
@@ -104,7 +126,7 @@ class CascadedCrossScaleInterrogation(nn.Module):
         k2v = self.norm2_kv(enhanced_local)
         attn_out_2, attn_weights_2 = self.cross_attn_2(q2, k2v, k2v)
 
-        z_final = global_cls + attn_out_2
+        z_final = (global_cls + attn_out_2).squeeze(1)
 
         return z_final, attn_weights_2
 
@@ -145,3 +167,5 @@ class DualEarlyStopping:
             
             if self.counter >= self.patience:
                 self.early_stop = True 
+
+
