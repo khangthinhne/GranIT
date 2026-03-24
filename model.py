@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import timm
 from LoRA import merge_lora
-from modules import AFC, CascadedCrossScaleInterrogation
+from modules import AFC, CascadedCrossScaleInterrogation, ConstrainedHighPassFilter
 from config import BACKBONE_NAME
 '''
 GranIT: A 3-Branch Framework
@@ -37,18 +37,18 @@ class MicroBranch(nn.Module):
     def __init__(self, model_name=BACKBONE_NAME, pretrained=True):
         super().__init__()
         self.model = BaselineViT(model_name, pretrained=True, num_classes=0)
-
+        
         laplacian_kernel = torch.tensor([[-1., -1., -1.],
                                          [-1.,  8., -1.],
                                          [-1., -1., -1.]])
         # [out_channels, in_channels/groups, H, W] = [3, 1, 3, 3]
-        kernel = laplacian_kernel.view(1, 1, 3, 3).repeat(3, 1, 1, 1)
-        self.high_pass_filter = nn.Conv2d(in_channels=3, out_channels=3, 
-                                          kernel_size=3, stride=1, padding=1, 
-                                          groups=3, bias=False)
-        self.high_pass_filter.weight.data = kernel
-        self.high_pass_filter.weight.requires_grad = False
-        
+        # kernel = laplacian_kernel.view(1, 1, 3, 3).repeat(3, 1, 1, 1)
+        # self.high_pass_filter = nn.Conv2d(in_channels=3, out_channels=3, 
+        #                                   kernel_size=3, stride=1, padding=1, 
+        #                                   groups=3, bias=False)
+        # self.high_pass_filter.weight.data = kernel
+        # self.high_pass_filter.weight.requires_grad = False
+        self.high_pass_filter = ConstrainedHighPassFilter(3, 3)
         self.model.head = nn.Identity() # remove classification block (head)
 
     def forward(self, x_crop):
@@ -84,6 +84,11 @@ class GranIT(nn.Module):
         # cascaded cross-scale interrogate
         self.interrogator = CascadedCrossScaleInterrogation(embed_dim=embed_dim)
 
+        self.theta_proj = nn.Sequential(
+            nn.Linear(6, 64),
+            nn.GELU(),
+            nn.Linear(64, embed_dim)
+        )
         self.mlp = nn.Sequential(
             nn.Linear(embed_dim, hidden_dim), 
             nn.GELU(),                   
@@ -92,9 +97,10 @@ class GranIT(nn.Module):
         )
 
     def forward(self, x_wide):
+        B = x_wide.size(0)
         # GLOBAL BRANCH
         _, cls_global, _ = self.global_vit(x_wide, return_tokens=True)
-        cls_global = cls_global.unsqueeze(1)
+        # cls_global = cls_global.unsqueeze(1)
         # LOCAL BRANCH
         # AFC cropped the 224x224 region
         x_crop, theta = self.afc_module(x_wide)
@@ -104,9 +110,14 @@ class GranIT(nn.Module):
         # MICRO BRANCH
         patch_tokens_micro = self.micro_branch(x_crop)
 
+        theta_flat = theta.view(B, 6)
+        theta_emb = self.theta_proj(theta_flat) # [B, 768]
+        
+        # Add position to [CLS] token Global
+        cls_global_aware = cls_global + theta_emb
         #Cross-Attention Mechanism
-        z_final, attn_weights = self.interrogator(cls_global, patch_tokens_local, patch_tokens_micro)
-        z_final_flat = z_final.squeeze(1)
-        logits = self.mlp(z_final_flat)
+        z_final, attn_weights = self.interrogator(cls_global_aware, patch_tokens_local, patch_tokens_micro)
+        # z_final = z_final.squeeze(1)
+        logits = self.mlp(z_final)
         
         return logits, theta, attn_weights
