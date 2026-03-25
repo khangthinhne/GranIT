@@ -48,3 +48,87 @@ Precision      : 0.5708
 Recall         : 0.4923
 F1 Score       : 0.5287
 --------------------------------------------------
+
+================================================================================: NEW APPROACH
+
+[2026-03-25 01:55:15] Model: GranIT_BEST_AUC.pth | Dataset: dfdc
+--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.5531
+AUC Score      : 0.7610
+Precision      : 0.9323
+Recall         : 0.4791
+F1 Score       : 0.6329
+--------------------------------------------------
+
+[2026-03-25 01:56:05] Model: GranIT_BEST_AUC.pth | Dataset: faceforensic++
+--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8919
+AUC Score      : 0.9608
+Precision      : 0.9731
+Recall         : 0.8895
+F1 Score       : 0.9294
+--------------------------------------------------
+
+[2026-03-25 01:56:56] Model: GranIT_BEST_AUC.pth | Dataset: celebdf
+--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7847
+AUC Score      : 0.8676
+Precision      : 0.8077
+Recall         : 0.7478
+F1 Score       : 0.7766
+--------------------------------------------------
+
+[2026-03-25 01:57:33] Model: GranIT_BEST_AUC.pth | Dataset: wilddf
+--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6411
+AUC Score      : 0.7164
+Precision      : 0.6411
+Recall         : 0.6477
+F1 Score       : 0.6444
+--------------------------------------------------
+
+-> 82.65
+
+[2026-03-25 01:58:24] Model: GranIT_BEST_VAL_LOSS.pth | Dataset: faceforensic++
+--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9128
+AUC Score      : 0.9548
+Precision      : 0.9525
+Recall         : 0.9377
+F1 Score       : 0.9451
+--------------------------------------------------
+
+[2026-03-25 01:59:15] Model: GranIT_BEST_VAL_LOSS.pth | Dataset: celebdf
+--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7745
+AUC Score      : 0.8646
+Precision      : 0.7597
+Recall         : 0.8036
+F1 Score       : 0.7810
+--------------------------------------------------
+
+[2026-03-25 01:59:52] Model: GranIT_BEST_VAL_LOSS.pth | Dataset: wilddf
+--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6067
+AUC Score      : 0.6749
+Precision      : 0.6196
+Recall         : 0.5612
+F1 Score       : 0.5889
+--------------------------------------------------
+
+[2026-03-25 02:02:13] Model: GranIT_BEST_VAL_LOSS.pth | Dataset: dfdc
+--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.4565
+AUC Score      : 0.7632
+Precision      : 0.9446
+Recall         : 0.3444
+F1 Score       : 0.5048
+--------------------------------------------------

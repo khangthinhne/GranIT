@@ -6,17 +6,24 @@ import os
 import timm
 from tqdm import tqdm
 import csv
+from modules import DualEarlyStopping
 
-from data_preparation.dataset import get_dataloaders
-from utils import AdvancedEarlyStopping 
+from data_preparation.dataset import get_dataloaders 
+import argparse
+import config
+def get_args():
+    parser = argparse.ArgumentParser(description="TRAIN SOTA BASELINE")
+    parser.add_argument('--data_dir', type=str, default=config.DATA_DIR)
+    parser.add_argument('--save_name', type=str, default=config.MODEL_NAME)
+    return parser.parse_args()
 
 class BaseBaselinePipeline:
-    def __init__(self, dataset_name='faceforensic++', batch_size=16, epochs=30, lr=1e-4):
+    def __init__(self, dataset_name='faceforensic++'):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.dataset_name = dataset_name
-        self.batch_size = batch_size
-        self.epochs = epochs
-        self.lr = lr
+        self.batch_size = config.BATCH_SIZE
+        self.epochs = config.EPOCHS
+        self.lr = config.LEARNING_RATE
         
         self.model_name = self.__class__.__name__.replace("Pipeline", "").lower()
         self.save_dir = './checkpoints'
@@ -34,7 +41,7 @@ class BaseBaselinePipeline:
 
         optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=1e-4)
         scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=self.epochs)
-        early_stopping = AdvancedEarlyStopping(patience=5, save_dir=self.save_dir, model_name=self.model_name)
+        early_stopping = DualEarlyStopping(patience=5, save_dir=self.save_dir, model_name=self.model_name)
         scaler = torch.cuda.amp.GradScaler()
 
         # File log
@@ -44,7 +51,7 @@ class BaseBaselinePipeline:
             f.write("Epoch,Train_Loss,Val_Loss,Val_AUC\n")
 
         for epoch in range(self.epochs):
-            # --- TRAIN ---
+
             self.model.train()
             train_loss, train_total = 0.0, 0
             
@@ -99,8 +106,7 @@ class BaseBaselinePipeline:
             print(f"Epoch {epoch+1}: Train Loss {epoch_train_loss:.4f} | Val Loss {epoch_val_loss:.4f} | Val AUC {epoch_val_auc:.4f}")
 
             with open(log_file, mode='a', newline='') as f:
-                f.write(f"{epoch+1},{epoch_train_loss:.4f},{epoch_val_loss:.4f},{epoch_val_auc:.4f}\n")
-
+                f.write(f"{epoch+1},{epoch_train_loss:.4f},{epoch_val_loss:.4f},{epoch_val_auc:.4f}\n")            
             early_stopping(epoch_val_loss, epoch_val_auc, self.model)
             if early_stopping.early_stop:
                 print(" EARLY STOPPING activated!")
@@ -153,9 +159,17 @@ class XceptionPipeline(BaseBaselinePipeline):
 
 class EffNetB4Pipeline(BaseBaselinePipeline):
     def build_model(self):
-        return timm.create_model('tf_efficientnet_b4', pretrained=True, num_classes=2)
+        return timm.create_model('efficientnet_b4', pretrained=True, num_classes=2)
 
 class ResNet50Pipeline(BaseBaselinePipeline):
     def build_model(self):
         return timm.create_model('resnet50', pretrained=True, num_classes=2)
     
+if __name__ == "__main__":
+    args = get_args()
+    models_to_train = {XceptionPipeline, EffNetB4Pipeline, ResNet50Pipeline}
+    
+    for TrainClass in models_to_train:
+        print(f"\n[TRAIN] on {TrainClass.__name__}")
+        model = TrainClass()
+        model.train()

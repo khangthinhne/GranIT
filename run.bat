@@ -44,15 +44,15 @@
 
 @REM python train.py
 
-@REM python inference.py --dataset dfdc           --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_AUC/FaceForensic++
-@REM python evaluate_baseline.py
-@REM python inference.py --dataset faceforensic++ --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_AUC/FaceForensic++
-@REM python inference.py --dataset celebdf        --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_AUC/CelebDF
-@REM python inference.py --dataset wilddf         --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_AUC/WildDF
+@REM python inference.py --dataset dfdc           --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 64 --vis_dir ./visualizations/GranIT_AUC/FaceForensic++
+@REM python inference.py --dataset faceforensic++ --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 64 --vis_dir ./visualizations/GranIT_AUC/FaceForensic++
+@REM python inference.py --dataset celebdf        --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 64 --vis_dir ./visualizations/GranIT_AUC/CelebDF
+@REM python inference.py --dataset wilddf         --model_path checkpoints/GranIT_BEST_AUC.pth --batch_size 64 --vis_dir ./visualizations/GranIT_AUC/WildDF
 
-@REM python inference.py --dataset faceforensic++ --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 8 --vis_dir ./visualizations/GranIT_VAL_LOSS/FaceForensic++
-@REM python inference.py --dataset celebdf        --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 8 --vis_dir ./visualizations/GranIT_VAL_LOSS/CelebDF
-@REM python inference.py --dataset wilddf         --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 8 --vis_dir ./visualizations/GranIT_VAL_LOSS/WildDF
+@REM python inference.py --dataset faceforensic++ --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 64 --vis_dir ./visualizations/GranIT_VAL_LOSS/FaceForensic++
+@REM python inference.py --dataset celebdf        --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 64 --vis_dir ./visualizations/GranIT_VAL_LOSS/CelebDF
+@REM python inference.py --dataset wilddf         --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 64 --vis_dir ./visualizations/GranIT_VAL_LOSS/WildDF
+@REM python inference.py --dataset dfdc         --model_path checkpoints/GranIT_BEST_VAL_LOSS.pth --batch_size 64 --vis_dir ./visualizations/GranIT_VAL_LOSS/DFDC
 
 :: ABALTION STUDYGranIT_GlobalOnly
 @REM python ablation_training.py --ablation_model only_global --save_name only_global_model
