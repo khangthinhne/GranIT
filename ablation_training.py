@@ -63,7 +63,7 @@ class GranIT_LocalOnly(nn.Module):
 class GranIT_MicroOnly(nn.Module):
     def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
         super().__init__()
-        self.afc_module = AFC(crop_size=(224, 224))
+        self.afc_module = A FC(crop_size=(224, 224))
         self.micro_branch = MicroBranch(model_name=BACKBONE_NAME)
         
         self.mlp = nn.Sequential(

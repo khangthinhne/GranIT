@@ -15,10 +15,10 @@ DATASET_REGISTRY = {
 }
 
 DATA_DIR = {
-    'faceforensic++': 'data/faces_processed',
+    'faceforensic++': 'data/faces_processed_split',
     'celebdf': 'data/celebdf_processed' ,
-    'wilddf': 'data/test/wilddf_processed',
-    'dfdc':    "D:/Project/model_testing/data/test/frames\DFDC"
+    'wilddf': 'data/wilddf_processed',
+    'dfdc':    "data/DFDC"
 }
 
 VAL_SPLIT = 0.2

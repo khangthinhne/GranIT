@@ -12,8 +12,8 @@ LOG_DIR = "./logs/"
 
 # Training Hyperparameters
 MODEL_NAME = "GranIT"
-BATCH_SIZE = 8
-EPOCHS = 25
+BATCH_SIZE = 64
+EPOCHS = 30
 LEARNING_RATE = 1e-4
 WEIGHT_DECAY = 0.05
 
