@@ -1378,3 +1378,366 @@ Precision      : 0.7955
 Recall         : 0.7680
 F1 Score       : 0.7815
 --------------------------------------------------
+
+[2026-03-26 01:20:28] Model: v2_baseline_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9235
+AUC Score      : 0.9656
+Precision      : 0.9492
+Recall         : 0.9555
+F1 Score       : 0.9523
+--------------------------------------------------
+
+[2026-03-26 01:22:44] Model: v2_baseline_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.3707
+AUC Score      : 0.6758
+Precision      : 0.9485
+Recall         : 0.2299
+F1 Score       : 0.3701
+--------------------------------------------------
+
+[2026-03-26 01:23:31] Model: v2_baseline_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7543
+AUC Score      : 0.8560
+Precision      : 0.7180
+Recall         : 0.8386
+F1 Score       : 0.7736
+--------------------------------------------------
+
+[2026-03-26 01:24:03] Model: v2_baseline_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.5587
+AUC Score      : 0.6451
+Precision      : 0.5949
+Recall         : 0.3790
+F1 Score       : 0.4631
+--------------------------------------------------
+
+[2026-03-26 01:24:50] Model: v2_lhpf_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9134
+AUC Score      : 0.9660
+Precision      : 0.9672
+Recall         : 0.9230
+F1 Score       : 0.9446
+--------------------------------------------------
+
+[2026-03-26 01:27:07] Model: v2_lhpf_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.3894
+AUC Score      : 0.6968
+Precision      : 0.9726
+Recall         : 0.2477
+F1 Score       : 0.3948
+--------------------------------------------------
+
+[2026-03-26 01:27:53] Model: v2_lhpf_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7772
+AUC Score      : 0.8627
+Precision      : 0.7965
+Recall         : 0.7452
+F1 Score       : 0.7700
+--------------------------------------------------
+
+[2026-03-26 01:28:26] Model: v2_lhpf_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.5718
+AUC Score      : 0.6468
+Precision      : 0.5938
+Recall         : 0.4659
+F1 Score       : 0.5221
+--------------------------------------------------
+
+[2026-03-26 01:29:13] Model: v2_fgafc_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9181
+AUC Score      : 0.9589
+Precision      : 0.9559
+Recall         : 0.9410
+F1 Score       : 0.9484
+--------------------------------------------------
+
+[2026-03-26 01:31:31] Model: v2_fgafc_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.4477
+AUC Score      : 0.7288
+Precision      : 0.9368
+Recall         : 0.3359
+F1 Score       : 0.4945
+--------------------------------------------------
+
+[2026-03-26 01:32:18] Model: v2_fgafc_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.8035
+AUC Score      : 0.8896
+Precision      : 0.7862
+Recall         : 0.8342
+F1 Score       : 0.8095
+--------------------------------------------------
+
+[2026-03-26 01:32:50] Model: v2_fgafc_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6506
+AUC Score      : 0.7223
+Precision      : 0.6573
+Recall         : 0.6351
+F1 Score       : 0.6460
+--------------------------------------------------
+
+[2026-03-26 01:33:38] Model: v2_full_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9187
+AUC Score      : 0.9653
+Precision      : 0.9486
+Recall         : 0.9499
+F1 Score       : 0.9492
+--------------------------------------------------
+
+[2026-03-26 01:35:55] Model: v2_full_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.7394
+AUC Score      : 0.6992
+Precision      : 0.8415
+Recall         : 0.8327
+F1 Score       : 0.8371
+--------------------------------------------------
+
+[2026-03-26 01:36:42] Model: v2_full_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7779
+AUC Score      : 0.8695
+Precision      : 0.7436
+Recall         : 0.8488
+F1 Score       : 0.7928
+--------------------------------------------------
+
+[2026-03-26 01:37:15] Model: v2_full_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6621
+AUC Score      : 0.7419
+Precision      : 0.6099
+Recall         : 0.9073
+F1 Score       : 0.7294
+--------------------------------------------------
+
+====================================================================================
+
+
+[2026-03-26 01:37:28] Model: only_global_model_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9139
+AUC Score      : 0.9605
+Precision      : 0.9274
+Recall         : 0.9681
+F1 Score       : 0.9473
+--------------------------------------------------
+
+[2026-03-26 01:38:03] Model: only_global_model_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.5898
+AUC Score      : 0.7163
+Precision      : 0.9135
+Recall         : 0.5412
+F1 Score       : 0.6797
+--------------------------------------------------
+
+[2026-03-26 01:38:16] Model: only_global_model_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7366
+AUC Score      : 0.8353
+Precision      : 0.6992
+Recall         : 0.8316
+F1 Score       : 0.7597
+--------------------------------------------------
+
+[2026-03-26 01:38:24] Model: only_global_model_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6370
+AUC Score      : 0.6899
+Precision      : 0.6221
+Recall         : 0.7054
+F1 Score       : 0.6612
+--------------------------------------------------
+
+[2026-03-26 01:38:49] Model: only_local_model_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8958
+AUC Score      : 0.9603
+Precision      : 0.9689
+Recall         : 0.8986
+F1 Score       : 0.9324
+--------------------------------------------------
+
+[2026-03-26 01:39:59] Model: only_local_model_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.7015
+AUC Score      : 0.7078
+Precision      : 0.8558
+Recall         : 0.7563
+F1 Score       : 0.8030
+--------------------------------------------------
+
+[2026-03-26 01:40:23] Model: only_local_model_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7806
+AUC Score      : 0.8662
+Precision      : 0.8208
+Recall         : 0.7184
+F1 Score       : 0.7662
+--------------------------------------------------
+
+[2026-03-26 01:40:40] Model: only_local_model_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6277
+AUC Score      : 0.6974
+Precision      : 0.6236
+Recall         : 0.6519
+F1 Score       : 0.6374
+--------------------------------------------------
+
+[2026-03-26 01:41:05] Model: only_micro_model_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8261
+AUC Score      : 0.9318
+Precision      : 0.9702
+Recall         : 0.8074
+F1 Score       : 0.8814
+--------------------------------------------------
+
+[2026-03-26 01:42:15] Model: only_micro_model_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.4569
+AUC Score      : 0.5320
+Precision      : 0.8250
+Recall         : 0.4121
+F1 Score       : 0.5496
+--------------------------------------------------
+
+[2026-03-26 01:42:39] Model: only_micro_model_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7027
+AUC Score      : 0.7780
+Precision      : 0.7604
+Recall         : 0.5928
+F1 Score       : 0.6662
+--------------------------------------------------
+
+[2026-03-26 01:42:56] Model: only_micro_model_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.5324
+AUC Score      : 0.5199
+Precision      : 0.5571
+Recall         : 0.3343
+F1 Score       : 0.4179
+--------------------------------------------------
+
+[2026-03-26 01:43:33] Model: without_Global_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.8869
+AUC Score      : 0.9616
+Precision      : 0.9772
+Recall         : 0.8791
+F1 Score       : 0.9255
+--------------------------------------------------
+
+[2026-03-26 01:45:18] Model: without_Global_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.7906
+AUC Score      : 0.6870
+Precision      : 0.8208
+Recall         : 0.9463
+F1 Score       : 0.8791
+--------------------------------------------------
+
+[2026-03-26 01:45:55] Model: without_Global_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7612
+AUC Score      : 0.8458
+Precision      : 0.7408
+Recall         : 0.8044
+F1 Score       : 0.7713
+--------------------------------------------------
+
+[2026-03-26 01:46:20] Model: without_Global_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6492
+AUC Score      : 0.7003
+Precision      : 0.6103
+Recall         : 0.8334
+F1 Score       : 0.7047
+--------------------------------------------------
+
+[2026-03-26 02:22:05] Model: without_Micro_BEST_AUC.pth | Dataset: faceforensic++
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9997
+Accuracy       : 0.9168
+AUC Score      : 0.9617
+Precision      : 0.9322
+Recall         : 0.9662
+F1 Score       : 0.9489
+--------------------------------------------------
+
+[2026-03-26 02:23:47] Model: without_Micro_BEST_AUC.pth | Dataset: dfdc
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 30794
+Accuracy       : 0.6269
+AUC Score      : 0.7109
+Precision      : 0.9005
+Recall         : 0.6026
+F1 Score       : 0.7220
+--------------------------------------------------
+
+[2026-03-26 02:24:22] Model: without_Micro_BEST_AUC.pth | Dataset: celebdf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 9989
+Accuracy       : 0.7486
+AUC Score      : 0.8677
+Precision      : 0.6904
+Recall         : 0.9024
+F1 Score       : 0.7823
+--------------------------------------------------
+
+[2026-03-26 02:24:46] Model: without_Micro_BEST_AUC.pth | Dataset: wilddf
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 6768
+Accuracy       : 0.6114
+AUC Score      : 0.6796
+Precision      : 0.5779
+Recall         : 0.8387
+F1 Score       : 0.6843
+--------------------------------------------------

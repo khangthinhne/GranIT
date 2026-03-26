@@ -65,19 +65,16 @@
 @REM python ablation_inference.py --ablation_model only_global --dataset faceforensic++ --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/FaceForensic++
 @REM python ablation_inference.py --ablation_model only_global --dataset celebdf        --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model only_global --dataset wilddf         --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/WildDF
-
 @REM python ablation_inference.py --ablation_model only_global --dataset dfdc         --model_path checkpoints/GranIT_GlobalOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_GlobalOnly_BEST_AUC/WildDF
 ::ONLY LOCAL
 @REM python ablation_inference.py --ablation_model only_local --dataset faceforensic++ --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/FaceForensic++
 @REM python ablation_inference.py --ablation_model only_local --dataset celebdf        --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model only_local --dataset wilddf         --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/WildDF
-
 @REM python ablation_inference.py --ablation_model only_local --dataset dfdc         --model_path checkpoints/GranIT_LocalOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_LocalOnly_BEST_AUC/WildDF
 ::ONLY MICRO
 @REM python ablation_inference.py --ablation_model only_micro --dataset faceforensic++ --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/FaceForensic++
 @REM python ablation_inference.py --ablation_model only_micro --dataset celebdf        --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model only_micro --dataset wilddf         --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/WildDF
-
 @REM python ablation_inference.py --ablation_model only_micro --dataset dfdc         --model_path checkpoints/GranIT_MicroOnly_BEST_AUC.pth --batch_size 32 --vis_dir ./visualizations/GranIT_MicroOnly_BEST_AUC/WildDF
 ::LOCAL + MICRO
 @REM python ablation_inference.py --ablation_model local_micro --dataset faceforensic++ --model_path checkpoints/GranIT_Local_Micro_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Local_Micro_BEST_AUC/FaceForensic++
@@ -89,3 +86,34 @@
 @REM python ablation_inference.py --ablation_model global_local --dataset celebdf        --model_path checkpoints/GranIT_Global_Local_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Global_Local_BEST_AUC/CelebDF
 @REM python ablation_inference.py --ablation_model global_local --dataset wilddf         --model_path checkpoints/GranIT_Global_Local_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Global_Local_BEST_AUC/WildDF
 @REM python ablation_inference.py --ablation_model global_local --dataset dfdc         --model_path checkpoints/GranIT_Global_Local_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Global_Local_BEST_AUC/WildDF
+
+@REM python ablation_training.py
+python ablation_training.py --ablation_model v2_baseline --save_name  v2_baseline
+python ablation_training.py --ablation_model v2_lhpf --save_name v2_lhpf
+python ablation_training.py --ablation_model v2_fgafc --save_name v2_fgafc
+python ablation_training.py --ablation_model v2_full --save_name v2_full
+
+python ablation_training.py --ablation_model only_global --save_name only_global_model
+python ablation_training.py --ablation_model only_local --save_name only_local_model
+python ablation_training.py --ablation_model only_micro --save_name only_micro_model
+python ablation_training.py --ablation_model local_micro --save_name without_Global
+python ablation_training.py --ablation_model global_local --save_name without_Micro
+
+
+:: 3 New components
+:: v2 Baseline
+python ablation_training.py --ablation_model v2_baseline --save_name v2_baseline
+
+python ablation_training.py --ablation_model v2_lhpf --save_name v2_lhpf
+python ablation_training.py --ablation_model v2_fgafc --save_name v2_fgafc
+python ablation_training.py --ablation_model v2_full --save_name v2_full
+
+
+:: branhc combination
+python ablation_training.py --ablation_model only_global --save_name only_global_model
+python ablation_training.py --ablation_model only_local --save_name only_local_model
+python ablation_training.py --ablation_model only_micro --save_name only_micro_model
+python ablation_training.py --ablation_model local_micro --save_name without_Global
+python ablation_training.py --ablation_model v2_no_m --save_name without_Micro
+python ablation_training.py
+python ablation_inference.py
