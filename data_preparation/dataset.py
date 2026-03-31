@@ -79,7 +79,7 @@ def get_dataloaders(mode='training', batch_size=8, dataset_model='faceforensic++
         for vid in train_vids: train_paths.extend(video_dict[vid])
         for vid in val_vids: val_paths.extend(video_dict[vid])
 
-        print(f"[{dataset_model.upper()}] Training: {len(train_paths)} ảnh | Validation: {len(val_paths)} ảnh")
+        print(f"[{dataset_model.upper()}] Training: {len(train_paths)} images | Validation: {len(val_paths)} images")
 
         train_dataset = DatasetClass(train_paths, transform=train_transforms, crop_margin=crop_margin)
         val_dataset = DatasetClass(val_paths, transform=val_test_transforms, crop_margin=crop_margin)

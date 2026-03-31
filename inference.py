@@ -10,7 +10,7 @@ import argparse
 from datetime import datetime
 
 from data_preparation.dataset import get_dataloaders
-from model import GranIT
+from modules.model import GranIT
 import config
 
 def get_args():

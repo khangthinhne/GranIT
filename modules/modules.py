@@ -39,7 +39,7 @@ class LocalizationNetwork(nn.Module):
                 self.high_pass_filter.weight.requires_grad = False
             self.fusion_conv = nn.Conv2d(6, 3, kernel_size=1)
 
-        from model import BaselineViT
+        from modules.model import BaselineViT
         self.backbone = BaselineViT(model_name=backbone_name, pretrained=pretrained, num_classes=0)
         if hasattr(self.backbone, 'embed_dim'):
             self.embed_dim = self.backbone.embed_dim

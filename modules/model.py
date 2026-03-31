@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import timm
 from modules.LoRA import merge_lora
-from modules import AFC, CascadedCrossScaleInterrogation, ConstrainedHighPassFilter
+from modules.modules import AFC, CascadedCrossScaleInterrogation, ConstrainedHighPassFilter
 from config import BACKBONE_NAME
 '''
 GranIT: A 3-Branch Framework
