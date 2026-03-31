@@ -6,6 +6,20 @@ models/
 visualizations/
 visualizations_celebdf/
 checkpoints/
+utils/
+visualize_beta_output/
+outputs/
+output_images/
+baseline/
+run_beta_ablation.bat 
+run.bat
+test.py
+train_baseline.py
+evaluate_baseline.py
+ablation_training.py
+ablation_inference.py
+logs/
+figures/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
