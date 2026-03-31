@@ -66,7 +66,7 @@ def generate_spatial_highpass_filter(image_path, save_path=None):
 # --- CHẠY THỬ NGAY ---
 if __name__ == "__main__":
     # Lấy cái ảnh crop mặt người của ông đưa vào đây
-    sample_crop = "data/faces_wide/original/001_wide_f114.jpg" # Ví dụ ảnh đã crop
+    sample_crop = "D:/Project/WR227/AFC/data/faces_processed/original/159_wide_f64.jpg" # Ví dụ ảnh đã crop
     output_file = "output_images/spatial_highpass_example.jpg"
     
     generate_spatial_highpass_filter(sample_crop, save_path=output_file)

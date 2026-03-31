@@ -9,14 +9,21 @@ import csv
 
 from data_preparation.dataset import get_dataloaders
 from utils import AdvancedEarlyStopping 
+import argparse
+import config
+def get_args():
+    parser = argparse.ArgumentParser(description="TRAIN SOTA BASELINE")
+    parser.add_argument('--data_dir', type=str, default=config.DATA_DIR)
+    parser.add_argument('--save_name', type=str, default=config.MODEL_NAME)
+    return parser.parse_args()
 
 class BaseBaselinePipeline:
-    def __init__(self, dataset_name='faceforensic++', batch_size=16, epochs=30, lr=1e-4):
+    def __init__(self, dataset_name='faceforensic++'):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.dataset_name = dataset_name
-        self.batch_size = batch_size
-        self.epochs = epochs
-        self.lr = lr
+        self.batch_size = config.BATCH_SIZE
+        self.epochs = config.EPOCHS
+        self.lr = config.LEARNING_RATE
         
         self.model_name = self.__class__.__name__.replace("Pipeline", "").lower()
         self.save_dir = './checkpoints'
@@ -44,7 +51,7 @@ class BaseBaselinePipeline:
             f.write("Epoch,Train_Loss,Val_Loss,Val_AUC\n")
 
         for epoch in range(self.epochs):
-            # --- TRAIN ---
+
             self.model.train()
             train_loss, train_total = 0.0, 0
             
@@ -153,9 +160,19 @@ class XceptionPipeline(BaseBaselinePipeline):
 
 class EffNetB4Pipeline(BaseBaselinePipeline):
     def build_model(self):
-        return timm.create_model('tf_efficientnet_b4', pretrained=True, num_classes=2)
+        return timm.create_model('efficientnet_b4', pretrained=True, num_classes=2)
 
 class ResNet50Pipeline(BaseBaselinePipeline):
     def build_model(self):
         return timm.create_model('resnet50', pretrained=True, num_classes=2)
     
+if __name__ == "__main__":
+    args = get_args()
+    model = BaseBaselinePipeline()
+    model.train()
+    models_to_train = {XceptionPipeline, EffNetB4Pipeline, ResNet50Pipeline}
+    
+    for TrainClass in models_to_train:
+        print(f"\n[TRAIN] on {TrainClass.__name__}")
+        model = TrainClass()
+        model.train()
