@@ -17,9 +17,6 @@ import argparse
  
 def get_args():
     parser = argparse.ArgumentParser(description='GranIT - Granularity-Adaptive Interrogation Transformer')
-    parser.add_argument('--data_dir', type=str, default=config.DATA_DIR)
-    parser.add_argument('--save_name', type=str, default=config.MODEL_NAME)
-    return parser.parse_args()
 
 def loss_function(logits, labels, theta, criterion_ce):
     loss_ce = criterion_ce(logits, labels)
