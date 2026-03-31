@@ -34,18 +34,21 @@ class BaselineViT(nn.Module):
         return logits
 
 class MicroBranch(nn.Module):
-    def __init__(self, model_name=BACKBONE_NAME, pretrained=True, use_lhpf=False):
+    def __init__(self, model_name=BACKBONE_NAME, pretrained=True):
         super().__init__()
         self.model = BaselineViT(model_name, pretrained=True, num_classes=0)
         
-        if use_lhpf:
-            self.high_pass_filter = ConstrainedHighPassFilter(3, 3)
-        else:
-            # Fixed Laplacian Filter
-            self.high_pass_filter = nn.Conv2d(3, 3, kernel_size=3, padding=1, groups=3, bias=False)
-            kernel = torch.tensor([[-1., -1., -1.], [-1., 8., -1.], [-1., -1., -1.]]).view(1, 1, 3, 3).repeat(3, 1, 1, 1)
-            self.high_pass_filter.weight.data = kernel
-            self.high_pass_filter.weight.requires_grad = False
+        laplacian_kernel = torch.tensor([[-1., -1., -1.],
+                                         [-1.,  8., -1.],
+                                         [-1., -1., -1.]])
+        # [out_channels, in_channels/groups, H, W] = [3, 1, 3, 3]
+        # kernel = laplacian_kernel.view(1, 1, 3, 3).repeat(3, 1, 1, 1)
+        # self.high_pass_filter = nn.Conv2d(in_channels=3, out_channels=3, 
+        #                                   kernel_size=3, stride=1, padding=1, 
+        #                                   groups=3, bias=False)
+        # self.high_pass_filter.weight.data = kernel
+        # self.high_pass_filter.weight.requires_grad = False
+        self.high_pass_filter = ConstrainedHighPassFilter(3, 3)
         self.model.head = nn.Identity() # remove classification block (head)
 
     def forward(self, x_crop):

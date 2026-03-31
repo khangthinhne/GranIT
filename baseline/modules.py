@@ -25,21 +25,11 @@ class ConstrainedHighPassFilter(nn.Module):
         weight[:, :, 1, 1] = -1.0
         return F.conv2d(x, weight, padding=1, groups=x.size(1))
 class LocalizationNetwork(nn.Module):
-    def __init__(self, backbone_name='vit_base_patch16_clip_224.laion2b',pretrained=True, crop_size=(224,224), use_fg_afc=False, use_lhpf=False):
+    def __init__(self, backbone_name='vit_base_patch16_clip_224.laion2b',pretrained=True, crop_size=(224,224)):
         super().__init__()
-        self.use_fg_afc = use_fg_afc
-        self.use_lhpf = use_lhpf
-        if self.use_fg_afc:
-            if use_lhpf:
-                self.high_pass_filter = ConstrainedHighPassFilter(3, 3)
-            else:
-                self.high_pass_filter = nn.Conv2d(3, 3, kernel_size=3, padding=1, groups=3, bias=False)
-                kernel = torch.tensor([[-1., -1., -1.], [-1., 8., -1.], [-1., -1., -1.]]).view(1, 1, 3, 3).repeat(3, 1, 1, 1)
-                self.high_pass_filter.weight.data = kernel
-                self.high_pass_filter.weight.requires_grad = False
-            self.fusion_conv = nn.Conv2d(6, 3, kernel_size=1)
-
         from model import BaselineViT
+        self.high_pass_filter = ConstrainedHighPassFilter(3, 3)
+        self.fusion_conv = nn.Conv2d(6, 3, kernel_size=1, stride=1, padding=0)
         self.backbone = BaselineViT(model_name=backbone_name, pretrained=pretrained, num_classes=0)
         if hasattr(self.backbone, 'embed_dim'):
             self.embed_dim = self.backbone.embed_dim
@@ -59,30 +49,25 @@ class LocalizationNetwork(nn.Module):
     def _freeze_base_weights(self):
 
         for name, param in self.named_parameters():
-            if 'lora' in name or 'stn_head' in name or 'fusion_conv' in name:
+            if 'lora' in name or 'stn_head' in name or 'high_pass_filter' in name or 'fusion_conv' in name:
                 param.requires_grad = True
-            elif 'high_pass_filter' in name:
-                param.requires_grad = self.use_lhpf
             else:
                 param.requires_grad = False
                 
         trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print(f"[{self.__class__.__name__}] Trainable parameters (LoRA + MLP): {trainable_params:,}")
     def forward(self, x):
-        if self.use_fg_afc:
-            x_freq = self.high_pass_filter(x)
-            x_fused = torch.cat([x, x_freq], dim=1)
-            x_input = self.fusion_conv(x_fused)
-        else:
-            x_input = x
-        features = self.backbone(x_input) # x: [B, 3, 224, 224] -> features: [B, 768]?
+        x_freq = self.high_pass_filter(x)
+        x_fused = torch.cat([x, x_freq], dim=1)
+        x_input_vit = self.fusion_conv(x_fused)
+        features = self.backbone(x_input_vit) # x: [B, 3, 224, 224] -> features: [B, 768]?
         theta_params = self.stn_head(features)
         return theta_params # [s_x, s_y, t_x, t_y]
 
 class AFC(nn.Module):
-    def __init__(self, crop_size=(224,224), use_fg_afc=False, use_lhpf=False):
+    def __init__(self, crop_size=(224,224)):
         super().__init__()
-        self.localization_networks = LocalizationNetwork(use_fg_afc=use_fg_afc, use_lhpf=use_lhpf)
+        self.localization_networks = LocalizationNetwork()
         self.crop_size = crop_size
 
     def forward(self, x_wide):
@@ -130,12 +115,11 @@ class CascadedCrossScaleInterrogation(nn.Module):
     def forward(self, global_cls, local_patches, micro_patches):
         global_cls = global_cls.unsqueeze(1) if global_cls.dim()==2 else global_cls
         # Stage 1: Local <- cross Micro
-        enhanced_local = local_patches
-        if micro_patches is not None:
-            q1 = self.norm1_q(local_patches)
-            k1v = self.norm1_kv(micro_patches)          # share norm cho k & v
-            attn_out_1, _ = self.cross_attn_1(q1, k1v, k1v)   # để tự học Wv riêng
-            enhanced_local = local_patches + attn_out_1
+        q1 = self.norm1_q(local_patches)
+        k1v = self.norm1_kv(micro_patches)          # share norm cho k & v
+        attn_out_1, _ = self.cross_attn_1(q1, k1v, k1v)   # để tự học Wv riêng
+
+        enhanced_local = local_patches + attn_out_1
 
         # Stage 2: Global <- cross Enhanced Local
         q2 = self.norm2_q(global_cls)

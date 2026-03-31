@@ -13,17 +13,20 @@ import re
 from data_preparation.dataset import get_dataloaders
 from model import GranIT
 import config
-from ablation_training import GranIT_Global_Local, GranIT_GlobalOnly, GranIT_Local_Micro, GranIT_LocalOnly, GranIT_MicroOnly, GranIT_Margin
+from ablation_training import GranIT_Global_Local, GranIT_GlobalOnly, GranIT_Local_Micro, GranIT_LocalOnly, GranIT_MicroOnly, GranIT_Margin, GranIT_Ablation
 def get_args():
     parser = argparse.ArgumentParser(description='Evaluate GranIT Model on cross datasets')
-    parser.add_argument('--ablation_model', type=str, choices=['only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin'])
+    parser.add_argument('--ablation_model', type=str, choices=[
+        'only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin',
+        'v2_baseline', 'v2_lhpf', 'v2_fgafc', 'v2_full', 'v2_no_m' 
+    ])
     parser.add_argument('--crop_margin', type=float, default=1.5)
     parser.add_argument('--dataset', type=str, default='faceforensic++', choices=['faceforensic++', 'celebdf', 'wilddf', 'dfdc'], help='Target dataset for evaluation')
-    parser.add_argument('--model_path', type=str, required=True, help='Path to the trained model weights (.pth)')
-    parser.add_argument('--batch_size', type=int, default=16, help='Batch size for evaluation')
+    parser.add_argument('--model_path', type=str, help='Path to the trained model weights (.pth)')
+    parser.add_argument('--batch_size', type=int, default=64, help='Batch size for evaluation')
     parser.add_argument('--vis_dir', type=str, default='./visualizations/ablation', help='Directory to save visualization images')
     parser.add_argument('--log_file', type=str, default='evaluation_ablation_results.txt', help='Path to save evaluation metrics')
-    parser.add_argument('--num_vis', type=int, default=10, help='Number of images to visualize and save')
+    parser.add_argument('--num_vis', type=int, default=5, help='Number of images to visualize and save')
     return parser.parse_args()
 
 def denormalize_image(tensor):
@@ -88,14 +91,25 @@ def get_model(args):
         model = GranIT_Global_Local()
     elif args.ablation_model == 'margin':
         model = GranIT_Margin()
+    elif args.ablation_model == 'v2_baseline':
+        model = GranIT_Ablation(use_lhpf=False, use_fg_afc=False, use_coord_inj=False, use_m_branch=True)
+    elif args.ablation_model == 'v2_lhpf':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=False, use_coord_inj=False, use_m_branch=True)
+    elif args.ablation_model == 'v2_fgafc':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=False, use_m_branch=True)
+    elif args.ablation_model == 'v2_full':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=True)
+    elif args.ablation_model == 'v2_no_m':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=False)
     else:
         raise ValueError(f'There is no ablation models named {args.ablation_model}!')
     
     print(f"Init [{model.__class__.__name__}] model")
     return model
 def evaluate_and_visualize(args):
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Evaluating on {device.type.upper()}...")
+    print(f"Evaluating on {device.type.upper()} | Model: {args.ablation_model}")
 
     test_loader = get_dataloaders(mode='testing', batch_size=args.batch_size, dataset_model=args.dataset, crop_margin=args.crop_margin)
     # Model init
@@ -134,34 +148,34 @@ def evaluate_and_visualize(args):
             all_preds.extend(preds.cpu().numpy())
             all_probs.extend(probs.cpu().numpy())
 
-            if images_saved < args.num_vis:
-                for j in range(images.size(0)):
-                    if images_saved >= args.num_vis: 
-                        break
-                    img_bgr = denormalize_image(images[j])
-                    is_correct = labels[j].item() == preds[j].item()
-                    color = (0, 255, 0) if is_correct else (0, 0, 255)
+            # if images_saved < args.num_vis:
+            #     for j in range(images.size(0)):
+            #         if images_saved >= args.num_vis: 
+            #             break
+            #         img_bgr = denormalize_image(images[j])
+            #         is_correct = labels[j].item() == preds[j].item()
+            #         color = (0, 255, 0) if is_correct else (0, 0, 255)
                     
-                    if theta is not None:
-                        t = theta[j].cpu().numpy()
-                        s_x, s_y = t[0, 0], t[1, 1]
-                        t_x, t_y = t[0, 2], t[1, 2]
+            #         if theta is not None:
+            #             t = theta[j].cpu().numpy()
+            #             s_x, s_y = t[0, 0], t[1, 1]
+            #             t_x, t_y = t[0, 2], t[1, 2]
 
-                        H, W, _ = img_bgr.shape
+            #             H, W, _ = img_bgr.shape
                         
-                        x1, y1, x2, y2 = get_stn_box(t_x, t_y, s_x, s_y, W, H)
+            #             x1, y1, x2, y2 = get_stn_box(t_x, t_y, s_x, s_y, W, H)
 
                         
                         
-                        cv2.rectangle(img_bgr, (x1, y1), (x2, y2), color, 3)
+            #             cv2.rectangle(img_bgr, (x1, y1), (x2, y2), color, 3)
                     
-                    true_txt = "Real" if labels[j].item() == 0 else "Fake"
-                    pred_txt = "Real" if preds[j].item() == 0 else "Fake"
-                    cv2.putText(img_bgr, f"T:{true_txt}|P:{pred_txt}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+            #         true_txt = "Real" if labels[j].item() == 0 else "Fake"
+            #         pred_txt = "Real" if preds[j].item() == 0 else "Fake"
+            #         cv2.putText(img_bgr, f"T:{true_txt}|P:{pred_txt}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
 
-                    filename = f"{args.dataset}_vis_{images_saved:03d}_{'correct' if is_correct else 'wrong'}.jpg"
-                    cv2.imwrite(os.path.join(args.vis_dir, filename), img_bgr)
-                    images_saved += 1
+            #         filename = f"{args.dataset}_vis_{images_saved:03d}_{'correct' if is_correct else 'wrong'}.jpg"
+            #         cv2.imwrite(os.path.join(args.vis_dir, filename), img_bgr)
+            #         images_saved += 1
 
     acc = accuracy_score(all_labels, all_preds)
     prec = precision_score(all_labels, all_preds, zero_division=0)
@@ -194,10 +208,52 @@ def evaluate_and_visualize(args):
     log_results(args.log_file, args.dataset, os.path.basename(args.model_path), metrics)
     log_results_csv(args.log_file, os.path.basename(args.model_path), config.BETA, metrics)
     print(f"Metrics saved to {args.log_file}")
-    print(f"Saved {images_saved} visualization images to {args.vis_dir}")
+    # print(f"Saved {images_saved} visualization images to {args.vis_dir}")
 
 if __name__ == "__main__":
     args = get_args()
+
     config.BETA = args.crop_margin
     config.BATCH_SIZE = args.batch_size
-    evaluate_and_visualize(args)
+
+
+    datasets_to_test = ['faceforensic++', 'dfdc', 'celebdf', 'wilddf']
+    
+ 
+    MODELS = {
+        # "v2_baseline":  "v2_baseline_BEST_AUC.pth",
+        # "v2_lhpf":      "v2_lhpf_BEST_AUC.pth",
+        # "v2_fgafc":     "v2_fgafc_BEST_AUC.pth",
+        # "v2_full":      "v2_full_BEST_AUC.pth",
+        "v2_no_m":      "without_Micro_BEST_AUC.pth",
+        # "only_global":  "only_global_model_BEST_AUC.pth",
+        # "only_local":   "only_local_model_BEST_AUC.pth",
+        # "only_micro":   "only_micro_model_BEST_AUC.pth",
+        # "local_micro":  "without_Global_BEST_AUC.pth",
+        # "v2_no_m": "without_Micro"
+
+    }
+    
+    for model_key, model_filename in MODELS.items():
+        full_model_path = os.path.join("./checkpoints", model_filename)
+        
+        if not os.path.exists(full_model_path):
+            print(f"\nNO WEIGHT EXISTS {model_key} AT {full_model_path}")
+            continue
+            
+        for dataset in datasets_to_test:
+            print(f"\n{'-'*60}")
+            print(f"Testing Model: [{model_key}] | Dataset: [{dataset.upper()}]")
+            print(f"{'-'*60}")
+            
+            args.ablation_model = model_key
+            args.dataset = dataset
+            args.model_path = full_model_path
+            # args.vis_dir = f"./visualizations/{model_key}_{dataset}"
+            # args.log_file = f"results_{model_key}.txt"
+            # --------------------------------------------------
+            # print(f"-----------------------------------Model: {args.ablation_model}")
+            evaluate_and_visualize(args)
+            
+    print(f"\n{'='*60}")
+    print("DONE")
