@@ -171,10 +171,10 @@ class DualEarlyStopping:
             torch.save(model.state_dict(), save_path_auc)
 
         if val_loss < self.best_val_loss - self.delta:
-            print(f"Val Loss reduce perfectly ({self.best_val_loss:.4f} --> {val_loss:.4f}). SAve model BEST_VAL_LOSS...")
+            print(f"Val Loss reduce perfectly ({self.best_val_loss:.4f} --> {val_loss:.4f})...")
             self.best_val_loss = val_loss
-            save_path_loss = os.path.join(self.save_dir, f"{self.model_name}_BEST_VAL_LOSS.pth")
-            torch.save(model.state_dict(), save_path_loss)
+            # save_path_loss = os.path.join(self.save_dir, f"{self.model_name}_BEST_VAL_LOSS.pth")
+            # torch.save(model.state_dict(), save_path_loss)
             
             self.counter = 0 
         else:
@@ -185,3 +185,116 @@ class DualEarlyStopping:
                 self.early_stop = True 
 
 
+# ==========================================
+# Variant 1: Simple Concatenation
+# ==========================================
+class SimpleConcatFusion(nn.Module):
+    def __init__(self, embed_dim=768):
+        super().__init__()
+        # 3 nhánh -> 3 cái [CLS] token -> tổng dim là 3 * 768
+        self.proj = nn.Linear(embed_dim * 3, embed_dim)
+        
+    def forward(self, cls_global, patch_local, patch_micro):
+        cls_global = cls_global.squeeze(1) if cls_global.dim() == 3 else cls_global
+        # Tính Global Average Pooling (hoặc lấy CLS) cho nhánh Local và Micro
+        # patch_local: [B, 196, 768] -> [B, 768]
+        local_pool = patch_local.mean(dim=1) 
+        micro_pool = patch_micro.mean(dim=1)
+        
+        # Nối lại: [B, 768 * 3]
+        fused = torch.cat([cls_global, local_pool, micro_pool], dim=-1)
+        
+        # Chiếu về lại embed_dim để nhét vào MLP cuối
+        z_final = self.proj(fused)
+        return z_final, None # Return None cho attn_weights vì không xài Attention
+
+# ==========================================
+# Variant 2: Standard Self-Attention
+# ==========================================
+class StandardSelfAttentionFusion(nn.Module):
+    def __init__(self, embed_dim=768, num_heads=8):
+        super().__init__()
+        # Xài đúng 1 block Encoder của Transformer
+        encoder_layer = nn.TransformerEncoderLayer(d_model=embed_dim, nhead=num_heads, 
+                                                   dim_feedforward=embed_dim * 4, 
+                                                   batch_first=True, norm_first=True)
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=1)
+        
+    def forward(self, cls_global, patch_local, patch_micro):
+        B = cls_global.size(0)
+        cls_global = cls_global.unsqueeze(1) # [B, 1, 768]
+        
+        # Nối tất cả thành 1 sequence siêu dài: 1 + 196 + 196 = 393 tokens
+        # sequence: [B, 393, 768]
+        sequence = torch.cat([cls_global, patch_local, patch_micro], dim=1)
+        
+        # Đẩy qua Self-Attention
+        out_sequence = self.transformer(sequence)
+        
+        # Lấy lại cái token đầu tiên (đại diện cho CLS) làm output
+        z_final = out_sequence[:, 0, :]
+        return z_final, None
+
+# ==========================================
+# Variant 3: Parallel Cross-Attention
+# ==========================================
+class ParallelCrossAttentionFusion(nn.Module):
+    def __init__(self, embed_dim=768, num_heads=8):
+        super().__init__()
+        # Khởi tạo 2 bộ Cross-Attention độc lập
+        self.cross_attn_local = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)
+        self.cross_attn_micro = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)
+        self.norm = nn.LayerNorm(embed_dim)
+        
+    def forward(self, cls_global, patch_local, patch_micro):
+        cls_global_q = cls_global.unsqueeze(1) # [B, 1, 768]
+        
+        # Nhánh 1: Global soi Local
+        z_local, _ = self.cross_attn_local(query=cls_global_q, key=patch_local, value=patch_local)
+        
+        # Nhánh 2: Global soi Micro (Làm song song, không phụ thuộc kết quả nhánh 1)
+        z_micro, _ = self.cross_attn_micro(query=cls_global_q, key=patch_micro, value=patch_micro)
+        
+        # Cộng 2 kết quả lại (hoặc concat tùy ông)
+        z_final = z_local.squeeze(1) + z_micro.squeeze(1)
+        z_final = self.norm(z_final)
+        
+        return z_final, None
+    
+
+class SequentialCrossAttentionFusion(nn.Module):
+    def __init__(self, embed_dim=768, num_heads=8):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(embed_dim)
+        self.cross_attn1 = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)
+        
+        self.norm2 = nn.LayerNorm(embed_dim)
+        self.cross_attn2 = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)
+        
+        self.norm_final = nn.LayerNorm(embed_dim)
+
+    def forward(self, cls_global, patch_local, patch_micro):
+        # Đảm bảo shape là [B, 1, 768]
+        cls_q = cls_global.unsqueeze(1) if cls_global.dim() == 2 else cls_global
+
+        # Step 1: Global -> Micro (Cộng Residual)
+        q1 = self.norm1(cls_q)
+        z1, _ = self.cross_attn1(q1, patch_micro, patch_micro)
+        cls_enhanced_1 = cls_q + z1
+
+        # Step 2: Global (đã có thông tin Micro) -> Local (Cộng Residual)
+        q2 = self.norm2(cls_enhanced_1)
+        z2, _ = self.cross_attn2(q2, patch_local, patch_local)
+        cls_enhanced_2 = cls_enhanced_1 + z2
+
+        # Squeeze lại và Normalize lần cuối
+        z_final = self.norm_final(cls_enhanced_2.squeeze(1))
+        return z_final, None
+    
+
+fusion_list = {
+    'CCSIM': CascadedCrossScaleInterrogation, 
+    'SCF': SimpleConcatFusion, 
+    'SSAF': StandardSelfAttentionFusion, 
+    'PCAF': ParallelCrossAttentionFusion, 
+    'SCAF':SequentialCrossAttentionFusion}
