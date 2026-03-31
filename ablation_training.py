@@ -14,7 +14,7 @@ import torch.backends.cudnn as cudnn
 
 from data_preparation.dataset import get_dataloaders
 from model import GranIT 
-from modules import DualEarlyStopping
+from modules import DualEarlyStopping, fusion_list
 import config
 import argparse
  
@@ -222,11 +222,68 @@ class GranIT_Ablation(nn.Module):
         logits = self.mlp(z_final)
         return logits, theta, attn_weights
 
+
+class GranIT_Fusion(nn.Module):
+    def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512, module='CCSIM'): 
+        super().__init__()
+            
+        # GLOBAL & LOCAL - share backbone
+        self.global_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
+        self.local_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
+    
+        # STN
+        self.afc_module = AFC(crop_size=(224, 224))
+        
+        # MICRO - Frequecy
+        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME)
+        
+        # cascaded cross-scale interrogate
+        self.interrogator = fusion_list[module](embed_dim=embed_dim)
+
+        self.theta_proj = nn.Sequential(
+            nn.Linear(6, 64),
+            nn.GELU(),
+            nn.Linear(64, embed_dim)
+        )
+        self.mlp = nn.Sequential(
+            nn.Linear(embed_dim, hidden_dim), 
+            nn.GELU(),                   
+            nn.Dropout(p=0.2),
+            nn.Linear(hidden_dim, num_classes)
+        )
+
+    def forward(self, x_wide):
+        B = x_wide.size(0)
+        # GLOBAL BRANCH
+        _, cls_global, _ = self.global_vit(x_wide, return_tokens=True)
+        # cls_global = cls_global.unsqueeze(1)
+        # LOCAL BRANCH
+        # AFC cropped the 224x224 region
+        x_crop, theta = self.afc_module(x_wide)
+        #Take the patch tokens for query section
+        _, _, patch_tokens_local = self.local_vit(x_crop, return_tokens=True) 
+
+        # MICRO BRANCH
+        patch_tokens_micro = self.micro_branch(x_crop)
+
+        theta_flat = theta.view(B, 6)
+        theta_emb = self.theta_proj(theta_flat) # [B, 768]
+        
+        # Add position to [CLS] token Global
+        cls_global_aware = cls_global + theta_emb
+        #Cross-Attention Mechanism
+        z_final, attn_weights = self.interrogator(cls_global_aware, patch_tokens_local, patch_tokens_micro)
+        # z_final = z_final.squeeze(1)
+        logits = self.mlp(z_final)
+        
+        return logits, theta, attn_weights
+
 def get_args():
     parser = argparse.ArgumentParser(description='GranIT - Granularity-Adaptive Interrogation Transformer')
     parser.add_argument('--ablation_model', type=str, choices=[
         'only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin',
-        'v2_baseline', 'v2_lhpf', 'v2_fgafc', 'v2_full', 'v2_no_m' 
+        'v2_baseline', 'v2_lhpf', 'v2_fgafc', 'v2_full', 'v2_no_m', 'CCSIM', 'SCF', 'SSAF', 
+        'PCAF', 'SCAF'
     ])
     parser.add_argument('--crop_margin', type=float, default=1.5)
     parser.add_argument('--batch_size', type=int, default=config.BATCH_SIZE)
@@ -280,6 +337,8 @@ def get_model(args):
         model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=True)
     elif args.ablation_model == 'v2_no_m':
         model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=False)
+    elif args.ablation_model == 'CCSIM' or args.ablation_model ==  'SCF' or args.ablation_model == 'SSAF' or args.ablation_model =='PCAF' or args.ablation_model =='SCAF':
+        model = GranIT_Fusion(module=args.ablation_model)
     else:
         raise ValueError(f'There is no ablation models named {args.ablation_model}!')
     
@@ -313,7 +372,7 @@ def train_model(args):
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), 
                             lr=config.LEARNING_RATE, weight_decay=1e-4)
     criterion_ce = nn.CrossEntropyLoss() 
-    scaler = torch.amp.GradScaler('cuda')
+    scaler = torch.cuda.amp.GradScaler()
     if args.ablation_model == 'margin':
         model_name = f"{args.save_name}_{config.BETA}"
     else:
@@ -360,14 +419,14 @@ def train_model(args):
         model.train()
         running_loss, correct, total = 0.0, 0, 0
 
-        pbar = tqdm(train_loader, desc=f"TRAIN Epoch {epoch+1}/{config.EPOCHS}", mininterval=5)
+        pbar = tqdm(train_loader, desc=f"TRAIN Epoch {epoch+1}/{config.EPOCHS}")
         for images, labels in pbar:
             images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
             
             # Ép kiểu Float16 
-            with torch.amp.autocast('cuda'):
+            with torch.cuda.amp.autocast():
                 logits, theta, att_weight = model(images)
                 loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
             
@@ -400,7 +459,7 @@ def train_model(args):
             for images, labels in val_loader:
                 images, labels = images.to(device), labels.to(device)
                 
-                with torch.amp.autocast('cuda'):
+                with torch.cuda.amp.autocast():
                     logits, theta, att_weight = model(images)
                     loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
                     
@@ -449,18 +508,11 @@ if __name__ == "__main__":
     base_args = get_args()
 
     MODELS_TO_TRAIN = {
-        # --- Bảng 2: Component-level ---
-        "v2_baseline": "v2_baseline",
-        "v2_lhpf": "v2_lhpf",
-        "v2_fgafc": "v2_fgafc",
-        "v2_full": "v2_full",
-        
-        # --- Bảng 1: Branch-level ---
-        "only_global": "only_global_model",
-        "only_local": "only_local_model",
-        "only_micro": "only_micro_model",
-        "local_micro": "without_Global",
-        "v2_no_m": "without_Micro"
+        'CCSIM': 'CCSIM', 
+        'SCF': 'SCF', 
+        'SSAF': 'SSAF', 
+        'PCAF': 'PCAF', 
+        'SCAF': 'SCAF'
     }
 
  

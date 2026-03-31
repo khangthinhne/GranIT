@@ -13,12 +13,13 @@ import re
 from data_preparation.dataset import get_dataloaders
 from model import GranIT
 import config
-from ablation_training import GranIT_Global_Local, GranIT_GlobalOnly, GranIT_Local_Micro, GranIT_LocalOnly, GranIT_MicroOnly, GranIT_Margin, GranIT_Ablation
+from ablation_training import GranIT_Global_Local, GranIT_GlobalOnly, GranIT_Local_Micro, GranIT_LocalOnly, GranIT_MicroOnly, GranIT_Margin, GranIT_Ablation, GranIT_Fusion
 def get_args():
     parser = argparse.ArgumentParser(description='Evaluate GranIT Model on cross datasets')
     parser.add_argument('--ablation_model', type=str, choices=[
         'only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin',
-        'v2_baseline', 'v2_lhpf', 'v2_fgafc', 'v2_full', 'v2_no_m' 
+        'v2_baseline', 'v2_lhpf', 'v2_fgafc', 'v2_full', 'v2_no_m',  'CCSIM', 'SCF', 'SSAF', 
+        'PCAF', 'SCAF'
     ])
     parser.add_argument('--crop_margin', type=float, default=1.5)
     parser.add_argument('--dataset', type=str, default='faceforensic++', choices=['faceforensic++', 'celebdf', 'wilddf', 'dfdc'], help='Target dataset for evaluation')
@@ -101,6 +102,8 @@ def get_model(args):
         model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=True)
     elif args.ablation_model == 'v2_no_m':
         model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=False)
+    elif args.ablation_model == 'CCSIM' or args.ablation_model ==  'SCF' or args.ablation_model == 'SSAF' or args.ablation_model =='PCAF' or args.ablation_model =='SCAF':
+        model = GranIT_Fusion(module=args.ablation_model)
     else:
         raise ValueError(f'There is no ablation models named {args.ablation_model}!')
     
@@ -225,12 +228,17 @@ if __name__ == "__main__":
         # "v2_lhpf":      "v2_lhpf_BEST_AUC.pth",
         # "v2_fgafc":     "v2_fgafc_BEST_AUC.pth",
         # "v2_full":      "v2_full_BEST_AUC.pth",
-        "v2_no_m":      "without_Micro_BEST_AUC.pth",
+        # "v2_no_m":      "without_Micro_BEST_AUC.pth",
         # "only_global":  "only_global_model_BEST_AUC.pth",
         # "only_local":   "only_local_model_BEST_AUC.pth",
         # "only_micro":   "only_micro_model_BEST_AUC.pth",
         # "local_micro":  "without_Global_BEST_AUC.pth",
         # "v2_no_m": "without_Micro"
+        'CCSIM': 'CCSIM_BEST_AUC.pth',
+        'SCF': 'SCF_BEST_AUC.pth', 
+        'SSAF': 'SSAF_BEST_AUC.pth', 
+        'PCAF': 'PCAF_BEST_AUC.pth', 
+        'SCAF': 'SCAF_BEST_AUC.pth'
 
     }
     
