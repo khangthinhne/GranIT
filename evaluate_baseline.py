@@ -91,13 +91,13 @@ class GranITEvaluator(BaseEvaluator):
         return logits
     
 if __name__ == "__main__":
-    datasets_to_test = ['faceforensic++']
+    datasets_to_test = ['faceforensic++', 'dfdc', 'celebdf', 'wilddf']
     
     models_to_test = [
-        (XceptionEvaluator, "models/sota_xception_BEST.pth"),
-        (EffNetB4Evaluator, "models/sota_efficientnet_BEST.pth"),
-        (ResNetEvaluator,   "models/sota_resnet50_BEST.pth"),
-        (GranITEvaluator, "checkpoints/GranIT_BEST_AUC.pth"),
+        (ResNetEvaluator, "checkpoints/resnet50_BEST_AUC.pth"),
+        (EffNetB4Evaluator, "checkpoints/effnetb4_BEST_AUC.pth"),
+        (XceptionEvaluator,   "checkpoints/xception_BEST_AUC.pth"),
+        # (GranITEvaluator, "checkpoints/GranIT_BEST_AUC.pth"),
     ]
     
     for EvaluatorClass, weight_path in models_to_test:

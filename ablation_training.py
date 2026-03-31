@@ -41,21 +41,16 @@ class GranIT_GlobalOnly(nn.Module):
 class GranIT_LocalOnly(nn.Module):
     def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
         super().__init__()
-        self.afc_module = AFC(crop_size=(224, 224))
+        self.afc_module = AFC(crop_size=(224, 224), use_fg_afc=True, use_lhpf=True) 
         self.local_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
         
         self.mlp = nn.Sequential(
-            nn.Linear(embed_dim, hidden_dim), 
-            nn.GELU(),                   
-            nn.Dropout(p=0.2),
-            nn.Linear(hidden_dim, num_classes)
+            nn.Linear(embed_dim, hidden_dim), nn.GELU(), nn.Dropout(p=0.2), nn.Linear(hidden_dim, num_classes)
         )
 
     def forward(self, x_wide):
         x_crop, theta = self.afc_module(x_wide)
-        # Bỏ qua patch_tokens, chỉ lấy [CLS] token của vùng mặt cục bộ để phân loại
         _, cls_local, _ = self.local_vit(x_crop, return_tokens=True)
-        
         logits = self.mlp(cls_local)
         return logits, theta, None
 
@@ -63,60 +58,41 @@ class GranIT_LocalOnly(nn.Module):
 class GranIT_MicroOnly(nn.Module):
     def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
         super().__init__()
-        self.afc_module = AFC(crop_size=(224, 224))
-        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME)
+        self.afc_module = AFC(crop_size=(224, 224), use_fg_afc=True, use_lhpf=True)
+        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME, use_lhpf=True) 
         
         self.mlp = nn.Sequential(
-            nn.Linear(embed_dim, hidden_dim), 
-            nn.GELU(),                   
-            nn.Dropout(p=0.2),
-            nn.Linear(hidden_dim, num_classes)
+            nn.Linear(embed_dim, hidden_dim), nn.GELU(), nn.Dropout(p=0.2), nn.Linear(hidden_dim, num_classes)
         )
 
     def forward(self, x_wide):
         x_crop, theta = self.afc_module(x_wide)
-        
-        # micro_branch hiện tại trả về patch_tokens (shape: B, N, Embed_dim)
         patch_tokens_micro = self.micro_branch(x_crop)
-        
-        # Global Average Pooling (GAP) 
-        # lên các patch tokens để tạo ra 1 vector đại diện cho toàn bộ ảnh tần số
-        micro_features = patch_tokens_micro.mean(dim=1) # Shape: (B, Embed_dim)
-        
+        micro_features = patch_tokens_micro.mean(dim=1) # GAP
         logits = self.mlp(micro_features)
         return logits, theta, None
 
 
-
-class GranIT_Local_Micro(nn.Module):
+class GranIT_Local_Micro(nn.Module): # (Chính là w/o G-Branch)
     def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512):
         super().__init__()
-        self.afc_module = AFC(crop_size=(224, 224))
-        
+        # Cập nhật đồ xịn
+        self.afc_module = AFC(crop_size=(224, 224), use_fg_afc=True, use_lhpf=True)
         self.local_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
-        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME)
+        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME, use_lhpf=True)
         
-        # Vẫn giữ Interrogator để Cross-Attention giữa Local và Micro
         self.interrogator = CascadedCrossScaleInterrogation(embed_dim=embed_dim)
         
         self.mlp = nn.Sequential(
-            nn.Linear(embed_dim, hidden_dim), 
-            nn.GELU(),                   
-            nn.Dropout(p=0.2),
-            nn.Linear(hidden_dim, num_classes)
+            nn.Linear(embed_dim, hidden_dim), nn.GELU(), nn.Dropout(p=0.2), nn.Linear(hidden_dim, num_classes)
         )
 
     def forward(self, x_wide):
         x_crop, theta = self.afc_module(x_wide)
-        
-        # Lấy cả [CLS] và patch_tokens từ Local
         _, cls_local, patch_tokens_local = self.local_vit(x_crop, return_tokens=True)
         patch_tokens_micro = self.micro_branch(x_crop)
         
-        # Thay vì dùng cls_global làm Query cho Interrogator, ta dùng cls_local
         cls_local = cls_local.unsqueeze(1) 
-        
-        # Interrogate giữa Local và Micro
         z_final, attn_weights = self.interrogator(cls_local, patch_tokens_local, patch_tokens_micro)
         z_final_flat = z_final.squeeze(1)
         
@@ -141,7 +117,7 @@ class GranIT_Global_Local(nn.Module):
         self.afc_module = AFC(crop_size=(224, 224))
 
     def forward(self, x_wide):
-            # GLOBAL BRANCH
+        # GLOBAL BRANCH
         _, cls_global, _ = self.global_vit(x_wide, return_tokens=True)
         cls_global = cls_global.unsqueeze(1)
         # LOCAL BRANCH
@@ -172,10 +148,86 @@ class GranIT_Margin(nn.Module):
         _, cls, _ = self.vit(x, return_tokens=True)
         logits = self.mlp(cls)
         return logits, None, None
+class GranIT_Ablation(nn.Module):
+    def __init__(self, num_classes=2, embed_dim=768, hidden_dim=512, 
+                 use_lhpf=False, 
+                 use_fg_afc=False, 
+                 use_coord_inj=False, 
+                 use_m_branch=True):
+        super().__init__()
+        
+        # Lưu lại các cờ để dùng trong forward
+        self.use_coord_inj = use_coord_inj
+        self.use_m_branch = use_m_branch
+        
+        print(f"--- INIT GRANIT ABLATION ---")
+        print(f"M-Branch: {use_m_branch} | LHPF: {use_lhpf} | FG-AFC: {use_fg_afc} | Coord-Inj: {use_coord_inj}")
+        
+        # 1. SHARED SPATIAL BACKBONE
+        self.spatial_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
+    
+        # 2. STN (Truyền cờ vào để AFC biết dùng RGB hay Fusion)
+        self.afc_module = AFC(crop_size=(224, 224), use_fg_afc=use_fg_afc, use_lhpf=use_lhpf)
+        
+        # 3. MICRO BRANCH (Chỉ khởi tạo nếu bật)
+        if self.use_m_branch:
+            self.micro_branch = MicroBranch(model_name=BACKBONE_NAME, use_lhpf=use_lhpf)
+        
+        # 4. CASCADED CROSS-SCALE INTERROGATOR
+        self.interrogator = CascadedCrossScaleInterrogation(embed_dim=embed_dim)
+
+        # 5. COORDINATE INJECTION (Chỉ khởi tạo nếu bật)
+        if self.use_coord_inj:
+            self.theta_proj = nn.Sequential(
+                nn.Linear(6, 64),
+                nn.GELU(),
+                nn.Linear(64, embed_dim)
+            )
+
+        # 6. CLASSIFIER HEAD
+        self.mlp = nn.Sequential(
+            nn.Linear(embed_dim, hidden_dim), 
+            nn.GELU(),                   
+            nn.Dropout(p=0.2),
+            nn.Linear(hidden_dim, num_classes)
+        )
+
+    def forward(self, x_wide):
+        B = x_wide.size(0)
+
+        # ---------------- GLOBAL BRANCH ----------------
+        _, cls_global, _ = self.spatial_vit(x_wide, return_tokens=True) 
+
+        # ---------------- LOCAL BRANCH ----------------
+        x_crop, theta = self.afc_module(x_wide)
+        _, _, patch_tokens_local = self.spatial_vit(x_crop, return_tokens=True) 
+
+        # ---------------- MICRO BRANCH ----------------
+        patch_tokens_micro = None
+        if self.use_m_branch:
+            patch_tokens_micro = self.micro_branch(x_crop)
+
+        # ---------------- COORDINATE INJECTION ----------------
+        if self.use_coord_inj:
+            theta_flat = theta.reshape(B, 6) # Dùng reshape cho an toàn
+            theta_emb = self.theta_proj(theta_flat)
+            cls_global_aware = cls_global + theta_emb
+        else:
+            cls_global_aware = cls_global # Bypass, giữ nguyên
+
+        # ---------------- CROSS-SCALE INTERROGATION ----------------
+        # Nếu micro_patches=None, module sẽ tự động bypass Stage 1
+        z_final, attn_weights = self.interrogator(cls_global_aware, patch_tokens_local, micro_patches=patch_tokens_micro)
+        
+        logits = self.mlp(z_final)
+        return logits, theta, attn_weights
 
 def get_args():
     parser = argparse.ArgumentParser(description='GranIT - Granularity-Adaptive Interrogation Transformer')
-    parser.add_argument('--ablation_model', type=str, choices=['only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin'])
+    parser.add_argument('--ablation_model', type=str, choices=[
+        'only_global', 'only_local', 'only_micro', 'local_micro', 'global_local', 'margin',
+        'v2_baseline', 'v2_lhpf', 'v2_fgafc', 'v2_full', 'v2_no_m' 
+    ])
     parser.add_argument('--crop_margin', type=float, default=1.5)
     parser.add_argument('--batch_size', type=int, default=config.BATCH_SIZE)
     parser.add_argument('--data_dir', type=str, default=config.DATA_DIR)
@@ -217,21 +269,31 @@ def get_model(args):
         model = GranIT_Global_Local()
     elif args.ablation_model == 'margin':
         model = GranIT_Margin()
+
+    elif args.ablation_model == 'v2_baseline':
+        model = GranIT_Ablation(use_lhpf=False, use_fg_afc=False, use_coord_inj=False, use_m_branch=True)
+    elif args.ablation_model == 'v2_lhpf':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=False, use_coord_inj=False, use_m_branch=True)
+    elif args.ablation_model == 'v2_fgafc':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=False, use_m_branch=True)
+    elif args.ablation_model == 'v2_full':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=True)
+    elif args.ablation_model == 'v2_no_m':
+        model = GranIT_Ablation(use_lhpf=True, use_fg_afc=True, use_coord_inj=True, use_m_branch=False)
     else:
         raise ValueError(f'There is no ablation models named {args.ablation_model}!')
     
     print(f"Init [{model.__class__.__name__}] model")
     return model
 
-def train_model():
+def train_model(args):
     torch.backends.cuda.matmul.allow_tf32 = True
     cudnn.benchmark = True
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Device: ", device)
-    args = get_args()
+    
     # Data preparation
-    config.BETA = args.crop_margin
-    config.BATCH_SIZE = args.batch_size
+   
     print(f"BETA = {config.BETA}")
     print(f"BATCH SIZE: {config.BATCH_SIZE}")
     data_dir = args.data_dir 
@@ -251,11 +313,12 @@ def train_model():
     optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), 
                             lr=config.LEARNING_RATE, weight_decay=1e-4)
     criterion_ce = nn.CrossEntropyLoss() 
-    scaler = torch.cuda.amp.GradScaler()
+    scaler = torch.amp.GradScaler('cuda')
     if args.ablation_model == 'margin':
-        model_name = f"{model.__class__.__name__}_{config.BETA}"
+        model_name = f"{args.save_name}_{config.BETA}"
     else:
-        model_name = f"{model.__class__.__name__}"
+        model_name = args.save_name
+
     early_stopping = DualEarlyStopping(
         patience=5, 
         delta=0.0001, 
@@ -297,14 +360,14 @@ def train_model():
         model.train()
         running_loss, correct, total = 0.0, 0, 0
 
-        pbar = tqdm(train_loader, desc=f"TRAIN Epoch {epoch+1}/{config.EPOCHS}")
+        pbar = tqdm(train_loader, desc=f"TRAIN Epoch {epoch+1}/{config.EPOCHS}", mininterval=5)
         for images, labels in pbar:
             images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
             
             # Ép kiểu Float16 
-            with torch.cuda.amp.autocast():
+            with torch.amp.autocast('cuda'):
                 logits, theta, att_weight = model(images)
                 loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
             
@@ -337,7 +400,7 @@ def train_model():
             for images, labels in val_loader:
                 images, labels = images.to(device), labels.to(device)
                 
-                with torch.cuda.amp.autocast():
+                with torch.amp.autocast('cuda'):
                     logits, theta, att_weight = model(images)
                     loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
                     
@@ -381,4 +444,40 @@ def train_model():
     print(f"Done training phase, best AUC: {best_auc:.4f}")
 
 if __name__ == "__main__":
-    train_model()
+    import gc
+
+    base_args = get_args()
+
+    MODELS_TO_TRAIN = {
+        # --- Bảng 2: Component-level ---
+        "v2_baseline": "v2_baseline",
+        "v2_lhpf": "v2_lhpf",
+        "v2_fgafc": "v2_fgafc",
+        "v2_full": "v2_full",
+        
+        # --- Bảng 1: Branch-level ---
+        "only_global": "only_global_model",
+        "only_local": "only_local_model",
+        "only_micro": "only_micro_model",
+        "local_micro": "without_Global",
+        "v2_no_m": "without_Micro"
+    }
+
+ 
+
+    for model_flag, save_name in MODELS_TO_TRAIN.items():
+        print(f"\n\n{'*'*60}")
+        print(f"TRAINING MODEL: [{model_flag}] | SAVE NAME: [{save_name}]")
+        print(f"{'*'*60}")
+
+        base_args.ablation_model = model_flag
+        base_args.save_name = save_name
+
+        train_model(base_args)
+
+        torch.cuda.empty_cache()
+        gc.collect()
+
+    print(f"\n{'='*60}")
+    print("DONE TRAINING")
+    print(f"{'='*60}")

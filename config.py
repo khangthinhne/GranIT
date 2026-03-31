@@ -12,8 +12,8 @@ LOG_DIR = "./logs/"
 
 # Training Hyperparameters
 MODEL_NAME = "GranIT"
-BATCH_SIZE = 8
-EPOCHS = 25
+BATCH_SIZE = 64
+EPOCHS = 30
 LEARNING_RATE = 1e-4
 WEIGHT_DECAY = 0.05
 
@@ -25,7 +25,7 @@ LORA_RANK = 8
 LORA_ALPHA = 16
 
 # AFC (Local Branch)
-BETA = 1.3
+BETA = 1.5
 SCALE_MIN = 0.4
 SCALE_MAX = 0.9
 

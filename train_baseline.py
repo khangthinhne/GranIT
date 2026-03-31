@@ -6,9 +6,9 @@ import os
 import timm
 from tqdm import tqdm
 import csv
+from modules import DualEarlyStopping
 
-from data_preparation.dataset import get_dataloaders
-from utils import AdvancedEarlyStopping 
+from data_preparation.dataset import get_dataloaders 
 import argparse
 import config
 def get_args():
@@ -41,7 +41,7 @@ class BaseBaselinePipeline:
 
         optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=1e-4)
         scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=self.epochs)
-        early_stopping = AdvancedEarlyStopping(patience=5, save_dir=self.save_dir, model_name=self.model_name)
+        early_stopping = DualEarlyStopping(patience=5, save_dir=self.save_dir, model_name=self.model_name)
         scaler = torch.cuda.amp.GradScaler()
 
         # File log
@@ -106,8 +106,7 @@ class BaseBaselinePipeline:
             print(f"Epoch {epoch+1}: Train Loss {epoch_train_loss:.4f} | Val Loss {epoch_val_loss:.4f} | Val AUC {epoch_val_auc:.4f}")
 
             with open(log_file, mode='a', newline='') as f:
-                f.write(f"{epoch+1},{epoch_train_loss:.4f},{epoch_val_loss:.4f},{epoch_val_auc:.4f}\n")
-
+                f.write(f"{epoch+1},{epoch_train_loss:.4f},{epoch_val_loss:.4f},{epoch_val_auc:.4f}\n")            
             early_stopping(epoch_val_loss, epoch_val_auc, self.model)
             if early_stopping.early_stop:
                 print(" EARLY STOPPING activated!")
@@ -168,8 +167,6 @@ class ResNet50Pipeline(BaseBaselinePipeline):
     
 if __name__ == "__main__":
     args = get_args()
-    model = BaseBaselinePipeline()
-    model.train()
     models_to_train = {XceptionPipeline, EffNetB4Pipeline, ResNet50Pipeline}
     
     for TrainClass in models_to_train:
