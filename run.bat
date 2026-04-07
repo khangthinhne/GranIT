@@ -88,32 +88,37 @@
 @REM python ablation_inference.py --ablation_model global_local --dataset dfdc         --model_path checkpoints/GranIT_Global_Local_BEST_AUC.pth --batch_size 8 --vis_dir ./visualizations/GranIT_Global_Local_BEST_AUC/WildDF
 
 @REM python ablation_training.py
-python ablation_training.py --ablation_model v2_baseline --save_name  v2_baseline
-python ablation_training.py --ablation_model v2_lhpf --save_name v2_lhpf
-python ablation_training.py --ablation_model v2_fgafc --save_name v2_fgafc
-python ablation_training.py --ablation_model v2_full --save_name v2_full
+@REM python ablation_training.py --ablation_model v2_baseline --save_name  v2_baseline
+@REM python ablation_training.py --ablation_model v2_lhpf --save_name v2_lhpf
+@REM python ablation_training.py --ablation_model v2_fgafc --save_name v2_fgafc
+@REM python ablation_training.py --ablation_model v2_full --save_name v2_full
 
-python ablation_training.py --ablation_model only_global --save_name only_global_model
-python ablation_training.py --ablation_model only_local --save_name only_local_model
-python ablation_training.py --ablation_model only_micro --save_name only_micro_model
-python ablation_training.py --ablation_model local_micro --save_name without_Global
-python ablation_training.py --ablation_model global_local --save_name without_Micro
-
-
-:: 3 New components
-:: v2 Baseline
-python ablation_training.py --ablation_model v2_baseline --save_name v2_baseline
-
-python ablation_training.py --ablation_model v2_lhpf --save_name v2_lhpf
-python ablation_training.py --ablation_model v2_fgafc --save_name v2_fgafc
-python ablation_training.py --ablation_model v2_full --save_name v2_full
+@REM python ablation_training.py --ablation_model only_global --save_name only_global_model
+@REM python ablation_training.py --ablation_model only_local --save_name only_local_model
+@REM python ablation_training.py --ablation_model only_micro --save_name only_micro_model
+@REM python ablation_training.py --ablation_model local_micro --save_name without_Global
+@REM python ablation_training.py --ablation_model global_local --save_name without_Micro
 
 
-:: branhc combination
-python ablation_training.py --ablation_model only_global --save_name only_global_model
-python ablation_training.py --ablation_model only_local --save_name only_local_model
-python ablation_training.py --ablation_model only_micro --save_name only_micro_model
-python ablation_training.py --ablation_model local_micro --save_name without_Global
-python ablation_training.py --ablation_model v2_no_m --save_name without_Micro
-python ablation_training.py
+@REM :: 3 New components
+@REM :: v2 Baseline
+@REM python ablation_training.py --ablation_model v2_baseline --save_name v2_baseline
+
+@REM python ablation_training.py --ablation_model v2_lhpf --save_name v2_lhpf
+@REM python ablation_training.py --ablation_model v2_fgafc --save_name v2_fgafc
+@REM python ablation_training.py --ablation_model v2_full --save_name v2_full
+
+
+@REM :: branhc combination
+@REM python ablation_training.py --ablation_model only_global --save_name only_global_model
+@REM python ablation_training.py --ablation_model only_local --save_name only_local_model
+@REM python ablation_training.py --ablation_model only_micro --save_name only_micro_model
+@REM python ablation_training.py --ablation_model local_micro --save_name without_Global
+@REM python ablation_training.py --ablation_model v2_no_m --save_name without_Micro
+@REM python ablation_training.py
+@REM python ablation_inference.py
+
+
+python ablation_training.py 
 python ablation_inference.py
+

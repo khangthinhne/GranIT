@@ -234,12 +234,11 @@ if __name__ == "__main__":
         # "only_micro":   "only_micro_model_BEST_AUC.pth",
         # "local_micro":  "without_Global_BEST_AUC.pth",
         # "v2_no_m": "without_Micro"
-        'CCSIM': 'CCSIM_BEST_AUC.pth',
-        'SCF': 'SCF_BEST_AUC.pth', 
-        'SSAF': 'SSAF_BEST_AUC.pth', 
-        'PCAF': 'PCAF_BEST_AUC.pth', 
-        'SCAF': 'SCAF_BEST_AUC.pth'
-
+        'CCSIM': 'GranIT_CCSIM_BEST_AUC.pth',
+        'SCF': 'GranIT_SCF_BEST_AUC.pth', 
+        'SSAF': 'GranIT_SSAF_BEST_AUC.pth', 
+        'PCAF': 'GranIT_PCAF_BEST_AUC.pth', 
+        'SCAF': 'GranIT_SCAF_BEST_AUC.pth'
     }
     
     for model_key, model_filename in MODELS.items():
