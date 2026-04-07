@@ -508,11 +508,11 @@ if __name__ == "__main__":
     base_args = get_args()
 
     MODELS_TO_TRAIN = {
-        'CCSIM': 'CCSIM', 
-        'SCF': 'SCF', 
-        'SSAF': 'SSAF', 
-        'PCAF': 'PCAF', 
-        'SCAF': 'SCAF'
+        'CCSIM': 'GranIT_CCSIM', 
+        'SCF': 'GranIT_SCF', 
+        'SSAF': 'GranIT_SSAF', 
+        'PCAF': 'GranIT_PCAF', 
+        'SCAF': 'GranIT_SCAF'
     }
 
  
