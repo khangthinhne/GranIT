@@ -11,6 +11,7 @@ import os
 from sklearn.metrics import roc_auc_score
 from torch.optim.lr_scheduler import LambdaLR, CosineAnnealingLR, SequentialLR
 import torch.backends.cudnn as cudnn
+from collections import Counter
 
 from data_preparation.dataset import get_dataloaders
 from model import GranIT 
@@ -163,9 +164,10 @@ class GranIT_Ablation(nn.Module):
         print(f"--- INIT GRANIT ABLATION ---")
         print(f"M-Branch: {use_m_branch} | LHPF: {use_lhpf} | FG-AFC: {use_fg_afc} | Coord-Inj: {use_coord_inj}")
         
-        # 1. SHARED SPATIAL BACKBONE
-        self.spatial_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
-    
+        # 1.  SPATIAL BACKBONE
+        self.global_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
+        self.local_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
+
         # 2. STN (Truyền cờ vào để AFC biết dùng RGB hay Fusion)
         self.afc_module = AFC(crop_size=(224, 224), use_fg_afc=use_fg_afc, use_lhpf=use_lhpf)
         
@@ -191,16 +193,18 @@ class GranIT_Ablation(nn.Module):
             nn.Dropout(p=0.2),
             nn.Linear(hidden_dim, num_classes)
         )
+        nn.init.zeros_(self.theta_proj[-1].weight)
+        nn.init.zeros_(self.theta_proj[-1].bias)
 
     def forward(self, x_wide):
         B = x_wide.size(0)
 
         # ---------------- GLOBAL BRANCH ----------------
-        _, cls_global, _ = self.spatial_vit(x_wide, return_tokens=True) 
+        _, cls_global, _ = self.global_vit(x_wide, return_tokens=True) 
 
         # ---------------- LOCAL BRANCH ----------------
         x_crop, theta = self.afc_module(x_wide)
-        _, _, patch_tokens_local = self.spatial_vit(x_crop, return_tokens=True) 
+        _, _, patch_tokens_local = self.local_vit(x_crop, return_tokens=True) 
 
         # ---------------- MICRO BRANCH ----------------
         patch_tokens_micro = None
@@ -344,7 +348,24 @@ def get_model(args):
     
     print(f"Init [{model.__class__.__name__}] model")
     return model
-
+def get_optimizer(model, args):
+    backbone_params = []
+    head_params = []
+    
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        if 'global_vit' in name or 'local_vit' in name or 'micro_branch' in name:
+            backbone_params.append(param)
+        else:  # AFC, interrogator, mlp, theta_proj
+            head_params.append(param)
+    
+    optimizer = optim.AdamW([
+        {"params": backbone_params, "lr": 5e-5},  # từ 2e-5
+        {"params": head_params,     "lr": 2e-4},  # từ 1e-4
+    ], weight_decay=config.WEIGHT_DECAY)
+    
+    return optimizer
 def train_model(args):
     torch.backends.cuda.matmul.allow_tf32 = True
     cudnn.benchmark = True
@@ -360,7 +381,8 @@ def train_model(args):
         mode='training', 
         batch_size=config.BATCH_SIZE, 
         dataset_model='faceforensic++',
-        crop_margin=args.crop_margin
+        crop_margin=args.crop_margin,
+        num_workers=config.NUM_WORKERS
     )
 
     # Model init
@@ -369,10 +391,22 @@ def train_model(args):
     model = model.to(device)
 
     # Optimizer & Loss
-    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), 
-                            lr=config.LEARNING_RATE, weight_decay=1e-4)
-    criterion_ce = nn.CrossEntropyLoss() 
+    # Trong ablation_training.py, sửa lại
+    # Thay toàn bộ block optimizer cũ bằng:
+    # Optimizer & Loss
+    optimizer = get_optimizer(model, args)
+
+    # CE weights
+    # all_labels = [train_loader.dataset.get_label(p) 
+    #             for p in train_loader.dataset.image_paths]
+    # counts = Counter(all_labels)
+    # ce_weights = torch.tensor([1.0/counts[0], 1.0/counts[1]], dtype=torch.float)
+    # ce_weights = ce_weights / ce_weights.sum()
+    # ce_weights = ce_weights.to(device)
+    criterion_ce = nn.CrossEntropyLoss( label_smoothing=0.1)
+
     scaler = torch.cuda.amp.GradScaler()
+
     if args.ablation_model == 'margin':
         model_name = f"{args.save_name}_{config.BETA}"
     else:
@@ -384,24 +418,11 @@ def train_model(args):
         save_dir=config.SAVE_MODEL_DIR, 
         model_name=model_name
     )
+
+    # Scheduler
+    scheduler = CosineAnnealingLR(optimizer, T_max=config.EPOCHS, eta_min=1e-6)
+
     print(f"\nStart training on {model.__class__.__name__} branch...")
-    # Warm up
-    warmup_epochs = 2 
-    total_epochs = config.EPOCHS
-    if total_epochs <= warmup_epochs: warmup_epochs = 0
-
-    def warmup_lambda(current_epoch: int):
-        if current_epoch < warmup_epochs: 
-            return float(current_epoch + 1) /   warmup_epochs
-        return 1.0
-
-    warmup_scheduler = LambdaLR(optimizer, lr_lambda=warmup_lambda)
-
-    if total_epochs > warmup_epochs:
-        cosine_scheduler = CosineAnnealingLR(optimizer, T_max=(total_epochs - warmup_epochs), eta_min=1e-6)
-        scheduler = SequentialLR(optimizer, schedulers=[warmup_scheduler, cosine_scheduler], milestones=[warmup_epochs])
-    else:
-        scheduler = warmup_scheduler
 
     # file log
     log_path = f"training_log_{args.ablation_model}_model.csv"
@@ -429,7 +450,13 @@ def train_model(args):
             with torch.cuda.amp.autocast():
                 logits, theta, att_weight = model(images)
                 loss, _, _, _ = loss_function(logits, labels, theta, criterion_ce)
-            
+            # Thêm vào training loop sau forward pass, vài batch đầu
+            if epoch >=2 and total <= 64:
+                s_x = theta[:, 0, 0].mean().item()
+                s_y = theta[:, 1, 1].mean().item()
+                t_x = theta[:, 0, 2].mean().item()
+                t_y = theta[:, 1, 2].mean().item()
+                print(f"STN: sx={s_x:.3f} sy={s_y:.3f} tx={t_x:.3f} ty={t_y:.3f}")
             # Backprop qua GradScaler
             scaler.scale(loss).backward()
             scaler.step(optimizer)
@@ -443,6 +470,7 @@ def train_model(args):
 
             pbar.set_postfix({'T_Loss': f"{loss.item():.3f}", 'T_Acc': f"{100.*correct/total:.1f}%"})
 
+        
         scheduler.step() 
         epoch_train_loss = running_loss / len(train_loader)
         epoch_train_acc = 100. * correct / total
@@ -453,7 +481,7 @@ def train_model(args):
         model.eval()
         val_loss, val_correct, val_total = 0.0, 0, 0
         y_true, y_scores = [], []
-
+    
         print("Validation...")
         with torch.no_grad(): 
             for images, labels in val_loader:
@@ -501,18 +529,20 @@ def train_model(args):
         print("-" * 50)
 
     print(f"Done training phase, best AUC: {best_auc:.4f}")
-
+    
 if __name__ == "__main__":
     import gc
 
     base_args = get_args()
 
     MODELS_TO_TRAIN = {
-        'CCSIM': 'GranIT_CCSIM', 
-        'SCF': 'GranIT_SCF', 
-        'SSAF': 'GranIT_SSAF', 
-        'PCAF': 'GranIT_PCAF', 
-        'SCAF': 'GranIT_SCAF'
+        # 'CCSIM': 'GranIT_CCSIM', 
+        # 'SCF': 'GranIT_SCF', 
+        # 'SSAF': 'GranIT_SSAF', 
+        # 'PCAF': 'GranIT_PCAF', 
+        # 'SCAF': 'GranIT_SCAF'
+        'v2_full': 'GranIT'
+        # 'only_global': 'only_global'
     }
 
  

@@ -95,3 +95,29 @@ class DFDCDataset(BaseDeepfakeDataset):
         video_id = filename.split('_')[0]
         
         return os.path.join(folder_path, video_id)
+
+
+
+class FFDeepfakesDataset(FaceForensicsDataset):
+    def __init__(self, image_paths, transform=None, crop_margin=1.5):
+        # Tự động lọc: Chỉ giữ lại ảnh thuộc thư mục 'original' hoặc 'Deepfakes'
+        filtered_paths = [p for p in image_paths if "original" in p or "Deepfakes" in p]
+        super().__init__(filtered_paths, transform, crop_margin)
+
+class FFFace2FaceDataset(FaceForensicsDataset):
+    def __init__(self, image_paths, transform=None, crop_margin=1.5):
+        # Tự động lọc: Chỉ giữ lại ảnh thuộc thư mục 'original' hoặc 'Face2Face'
+        filtered_paths = [p for p in image_paths if "original" in p or "Face2Face" in p]
+        super().__init__(filtered_paths, transform, crop_margin)
+
+class FFFaceSwapDataset(FaceForensicsDataset):
+    def __init__(self, image_paths, transform=None, crop_margin=1.5):
+        # Tự động lọc: Chỉ giữ lại ảnh thuộc thư mục 'original' hoặc 'FaceSwap'
+        filtered_paths = [p for p in image_paths if "original" in p or "FaceSwap" in p]
+        super().__init__(filtered_paths, transform, crop_margin)
+
+class FFNeuralTexturesDataset(FaceForensicsDataset):
+    def __init__(self, image_paths, transform=None, crop_margin=1.5):
+        # Tự động lọc: Chỉ giữ lại ảnh thuộc thư mục 'original' hoặc 'NeuralTextures'
+        filtered_paths = [p for p in image_paths if "original" in p or "NeuralTextures" in p]
+        super().__init__(filtered_paths, transform, crop_margin)
