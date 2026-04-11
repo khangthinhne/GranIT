@@ -216,30 +216,27 @@ def evaluate_and_visualize(args):
 if __name__ == "__main__":
     args = get_args()
 
-    config.BETA = args.crop_margin
-    config.BATCH_SIZE = args.batch_size
 
 
-    datasets_to_test = ['faceforensic++', 'dfdc', 'celebdf', 'wilddf']
+    datasets_to_test = ['ff_df', 'ff_f2f', 'ff_fs', 'ff_nt']
     
  
     MODELS = {
         # "v2_baseline":  "v2_baseline_BEST_AUC.pth",
         # "v2_lhpf":      "v2_lhpf_BEST_AUC.pth",
         # "v2_fgafc":     "v2_fgafc_BEST_AUC.pth",
-        # "v2_full":      "v2_full_BEST_AUC.pth",
+        "v2_full":      "v2_full_BEST_AUC.pth",
         # "v2_no_m":      "without_Micro_BEST_AUC.pth",
         # "only_global":  "only_global_model_BEST_AUC.pth",
         # "only_local":   "only_local_model_BEST_AUC.pth",
         # "only_micro":   "only_micro_model_BEST_AUC.pth",
         # "local_micro":  "without_Global_BEST_AUC.pth",
         # "v2_no_m": "without_Micro"
-        'CCSIM': 'CCSIM_BEST_AUC.pth',
-        'SCF': 'SCF_BEST_AUC.pth', 
-        'SSAF': 'SSAF_BEST_AUC.pth', 
-        'PCAF': 'PCAF_BEST_AUC.pth', 
-        'SCAF': 'SCAF_BEST_AUC.pth'
-
+        # 'CCSIM': 'GranIT_CCSIM_BEST_AUC.pth',
+        # 'SCF': 'GranIT_SCF_BEST_AUC.pth', 
+        # 'SSAF': 'GranIT_SSAF_BEST_AUC.pth', 
+        # 'PCAF': 'GranIT_PCAF_BEST_AUC.pth', 
+        # 'SCAF': 'GranIT_SCAF_BEST_AUC.pth'
     }
     
     for model_key, model_filename in MODELS.items():

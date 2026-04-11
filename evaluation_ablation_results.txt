@@ -1741,3 +1741,203 @@ Precision      : 0.5779
 Recall         : 0.8387
 F1 Score       : 0.6843
 --------------------------------------------------
+
+[2026-04-07 18:18:02] Model: GranIT_CCSIM_BEST_AUC.pth | Dataset: ff_df
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 3997
+Accuracy       : 0.8957
+AUC Score      : 0.9845
+Precision      : 0.8385
+Recall         : 0.9800
+F1 Score       : 0.9037
+--------------------------------------------------
+
+[2026-04-07 18:18:32] Model: GranIT_CCSIM_BEST_AUC.pth | Dataset: ff_f2f
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8932
+AUC Score      : 0.9776
+Precision      : 0.8380
+Recall         : 0.9750
+F1 Score       : 0.9013
+--------------------------------------------------
+
+[2026-04-07 18:18:54] Model: GranIT_CCSIM_BEST_AUC.pth | Dataset: ff_fs
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8855
+AUC Score      : 0.9726
+Precision      : 0.8358
+Recall         : 0.9595
+F1 Score       : 0.8934
+--------------------------------------------------
+
+[2026-04-07 18:19:25] Model: GranIT_CCSIM_BEST_AUC.pth | Dataset: ff_nt
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8692
+AUC Score      : 0.9532
+Precision      : 0.8310
+Recall         : 0.9270
+F1 Score       : 0.8764
+--------------------------------------------------
+
+[2026-04-07 18:19:45] Model: GranIT_SCF_BEST_AUC.pth | Dataset: ff_df
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 3997
+Accuracy       : 0.8747
+AUC Score      : 0.9828
+Precision      : 0.8048
+Recall         : 0.9890
+F1 Score       : 0.8874
+--------------------------------------------------
+
+[2026-04-07 18:20:06] Model: GranIT_SCF_BEST_AUC.pth | Dataset: ff_f2f
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8698
+AUC Score      : 0.9709
+Precision      : 0.8034
+Recall         : 0.9790
+F1 Score       : 0.8826
+--------------------------------------------------
+
+[2026-04-07 18:20:28] Model: GranIT_SCF_BEST_AUC.pth | Dataset: ff_fs
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8665
+AUC Score      : 0.9651
+Precision      : 0.8024
+Recall         : 0.9725
+F1 Score       : 0.8793
+--------------------------------------------------
+
+[2026-04-07 18:20:58] Model: GranIT_SCF_BEST_AUC.pth | Dataset: ff_nt
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8502
+AUC Score      : 0.9452
+Precision      : 0.7969
+Recall         : 0.9400
+F1 Score       : 0.8626
+--------------------------------------------------
+
+[2026-04-07 18:21:19] Model: GranIT_SSAF_BEST_AUC.pth | Dataset: ff_df
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 3997
+Accuracy       : 0.8697
+AUC Score      : 0.9819
+Precision      : 0.7976
+Recall         : 0.9905
+F1 Score       : 0.8836
+--------------------------------------------------
+
+[2026-04-07 18:21:41] Model: GranIT_SSAF_BEST_AUC.pth | Dataset: ff_f2f
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8638
+AUC Score      : 0.9725
+Precision      : 0.7959
+Recall         : 0.9785
+F1 Score       : 0.8778
+--------------------------------------------------
+
+[2026-04-07 18:22:02] Model: GranIT_SSAF_BEST_AUC.pth | Dataset: ff_fs
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8592
+AUC Score      : 0.9684
+Precision      : 0.7943
+Recall         : 0.9695
+F1 Score       : 0.8732
+--------------------------------------------------
+
+[2026-04-07 18:22:23] Model: GranIT_SSAF_BEST_AUC.pth | Dataset: ff_nt
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8353
+AUC Score      : 0.9324
+Precision      : 0.7859
+Recall         : 0.9215
+F1 Score       : 0.8483
+--------------------------------------------------
+
+[2026-04-07 18:22:44] Model: GranIT_PCAF_BEST_AUC.pth | Dataset: ff_df
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 3997
+Accuracy       : 0.8959
+AUC Score      : 0.9874
+Precision      : 0.8374
+Recall         : 0.9825
+F1 Score       : 0.9041
+--------------------------------------------------
+
+[2026-04-07 18:23:05] Model: GranIT_PCAF_BEST_AUC.pth | Dataset: ff_f2f
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8902
+AUC Score      : 0.9725
+Precision      : 0.8360
+Recall         : 0.9710
+F1 Score       : 0.8985
+--------------------------------------------------
+
+[2026-04-07 18:23:26] Model: GranIT_PCAF_BEST_AUC.pth | Dataset: ff_fs
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8848
+AUC Score      : 0.9725
+Precision      : 0.8344
+Recall         : 0.9600
+F1 Score       : 0.8928
+--------------------------------------------------
+
+[2026-04-07 18:23:47] Model: GranIT_PCAF_BEST_AUC.pth | Dataset: ff_nt
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8678
+AUC Score      : 0.9475
+Precision      : 0.8294
+Recall         : 0.9260
+F1 Score       : 0.8750
+--------------------------------------------------
+
+[2026-04-07 18:24:08] Model: GranIT_SCAF_BEST_AUC.pth | Dataset: ff_df
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 3997
+Accuracy       : 0.9094
+AUC Score      : 0.9855
+Precision      : 0.8616
+Recall         : 0.9755
+F1 Score       : 0.9150
+--------------------------------------------------
+
+[2026-04-07 18:24:29] Model: GranIT_SCAF_BEST_AUC.pth | Dataset: ff_f2f
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8928
+AUC Score      : 0.9625
+Precision      : 0.8575
+Recall         : 0.9420
+F1 Score       : 0.8978
+--------------------------------------------------
+
+[2026-04-07 18:24:50] Model: GranIT_SCAF_BEST_AUC.pth | Dataset: ff_fs
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8912
+AUC Score      : 0.9681
+Precision      : 0.8571
+Recall         : 0.9390
+F1 Score       : 0.8962
+--------------------------------------------------
+
+[2026-04-07 18:25:11] Model: GranIT_SCAF_BEST_AUC.pth | Dataset: ff_nt
+ | Crop Margin (Beta): 1.5--------------------------------------------------
+Total Samples  : 4000
+Accuracy       : 0.8532
+AUC Score      : 0.9286
+Precision      : 0.8465
+Recall         : 0.8630
+F1 Score       : 0.8547
+--------------------------------------------------
