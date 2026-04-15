@@ -46,7 +46,7 @@ Compared to standard baselines that suffer from positional and content biases, G
 Clone the repository and install the required dependencies:
 ### 1. Clone the repo
 ```bash
-git clone [https://github.com/your-username/GranIT.git](https://github.com/your-username/GranIT.git)
+git clone [https://github.com/khangthinhne/GranIT.git](https://github.com/khangthinhne/GranIT.git)
 cd GranIT
 ```
 ### 2. Requirements
