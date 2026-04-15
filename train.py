@@ -88,6 +88,7 @@ def train_model():
         scheduler = warmup_scheduler
 
     # file log
+    os.makedirs(config.LOG_DIR, exist_ok=True)
     log_file = os.path.join(config.LOG_DIR,f"training_log_{config.MODEL_NAME}.csv")
     with open(log_file, mode='w', newline='') as f:
         writer = csv.writer(f)

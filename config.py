@@ -14,7 +14,7 @@ LOG_DIR = "./logs/"
 MODEL_NAME = "GranIT"
 BATCH_SIZE = 64
 EPOCHS = 30
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 2e-5
 WEIGHT_DECAY = 0.05
 
 # Settings (ViT & LoRA_

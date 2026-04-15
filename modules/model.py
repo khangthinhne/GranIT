@@ -73,10 +73,10 @@ class GranIT(nn.Module):
         self.local_vit = BaselineViT(model_name=BACKBONE_NAME, pretrained=True, num_classes=0)
     
         # STN
-        self.afc_module = AFC(crop_size=(224, 224))
+        self.afc_module = AFC(crop_size=(224, 224), use_fg_afc=True, use_lhpf=True)
         
         # MICRO - Frequecy
-        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME)
+        self.micro_branch = MicroBranch(model_name=BACKBONE_NAME, use_lhpf=True)
         
         # cascaded cross-scale interrogate
         self.interrogator = CascadedCrossScaleInterrogation(embed_dim=embed_dim)
