@@ -5,7 +5,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-[Read our full WR227 Paper here (PDF)](paper/paper.pdf)
+[Read our full WR227 Paper here (PDF)](paper/GranIT.pdf)
 
 > **Abstract:** Detecting manipulated media in cross-domain scenarios remains a formidable challenge due to the domain shift vulnerability of existing methods. **GranIT** is a multi-granularity framework designed to robustly detect face forgeries by synergizing global spatial contexts, localized facial boundaries, and high-frequency micro-artifacts.
 
@@ -43,6 +43,7 @@ Compared to standard baselines that suffer from positional and content biases, G
 
 ## Installation & Usage
 
+
 Clone the repository and install the required dependencies:
 ### 1. Clone the repo
 ```bash
@@ -53,3 +54,22 @@ cd GranIT
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 pip install -r requirements.txt
+```
+
+## Scrips
+
+### 1. Training script:
+```bash
+python train.py
+```
+
+### 2. Inference script:
+```bash
+python inference.py
+```
+
+## Acknowledge
+We acknowledge the helpful functions from STN.
+
+## Contact
+If there are any questions or interest on our method, please contact [nkthinh2406@apcs.fitus.edu.vn](mailto:nkthinh2406@apcs.fitus.edu.vn).
