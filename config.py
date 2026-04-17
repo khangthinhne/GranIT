@@ -17,7 +17,7 @@ EPOCHS = 30
 LEARNING_RATE = 2e-5
 WEIGHT_DECAY = 0.05
 
-# Settings (ViT & LoRA_
+# Settings (ViT & LoRA)
 IMAGE_SIZE = 224
 PATCH_SIZE = 16
 EMBED_DIM = 768
@@ -35,9 +35,3 @@ LAMBDA_TRANS = 0.1
 
 
 
-# BATCH_SIZE = 16     
-# EPOCHS = 25
-# LEARNING_RATE = 2e-5
-
-# LAMBDA_TRANS = 0.1    
-# LAMBDA_SCALE = 0.1   
